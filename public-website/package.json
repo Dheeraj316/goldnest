@@ -1,0 +1,28 @@
+{
+  "name": "@goldnest/public-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "next": "16.3.5",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "lucide-react": "0.446.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.16.10",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.1",
+    "autoprefixer": "10.4.20",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.5",
+    "postcss": "8.5.28",
+    "tailwindcss": "3.4.13",
+    "typescript": "5.6.2"
+  }
+}
