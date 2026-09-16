@@ -1,0 +1,40 @@
+## Node
+node_modules/
+dist/
+build/
+coverage/
+*.log
+npm-debug.log*
+
+## Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+## Prisma
+backend/prisma/migrations/dev/
+
+## Flutter
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/build/
+**/ios/Pods/
+**/ios/.symlinks/
+**/android/.gradle/
+
+## Next.js
+admin-web/.next/
+admin-web/out/
+
+## IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+## Misc
+*.tsbuildinfo
+.turbo/
