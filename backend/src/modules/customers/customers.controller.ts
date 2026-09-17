@@ -59,7 +59,7 @@ export class CustomersController {
   @RequirePermissions('customer.kyc.verify')
   @Audit({ action: 'CUSTOMER.KYC.REVIEW', referenceType: 'KycRecord' })
   reviewKyc(@Param('kycRecordId', ParseUUIDPipe) kycRecordId: string, @Body() dto: ReviewKycDto, @CurrentUser() user: JwtPayloadUser) {
-    return this.customersService.reviewKyc(kycRecordId, dto, user.employeeId!);
+    return this.customersService.reviewKyc(kycRecordId, dto, user);
   }
 
   private assertCustomer(user: JwtPayloadUser) {

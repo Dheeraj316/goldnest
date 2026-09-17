@@ -86,17 +86,29 @@ export class CustomersService {
     return customer;
   }
 
-  async reviewKyc(kycRecordId: string, dto: ReviewKycDto, reviewerEmployeeId: string) {
-    const kyc = await this.prisma.kycRecord.findUnique({ where: { id: kycRecordId } });
+  async reviewKyc(kycRecordId: string, dto: ReviewKycDto, reviewer: JwtPayloadUser) {
+    const kyc = await this.prisma.kycRecord.findUnique({
+      where: { id: kycRecordId },
+      include: { customer: { select: { branchId: true } } },
+    });
     if (!kyc) {
       throw new AppException(ErrorCode.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
+    // A branch-scoped reviewer (e.g. Branch Manager) may only decide KYC for
+    // their own branch's customers — without this, granting customer.kyc.verify
+    // to any branch-scoped role would let it approve/reject KYC anywhere.
+    // Note: nothing in Phase 1 assigns a customer to a branch yet (that lands
+    // with the appointment/branch-visit flow in Phase 2), so customer.branchId
+    // is null today and this fails closed for every branch-scoped role —
+    // only cross-branch roles (SUPER_ADMIN/ADMIN/REGIONAL_MANAGER/...) can
+    // review KYC until then. That's the correct interim posture, not a bug.
+    this.branchScope.assertAccess(reviewer, kyc.customer.branchId);
 
     const updated = await this.prisma.kycRecord.update({
       where: { id: kycRecordId },
       data: {
         status: dto.decision,
-        verifiedBy: reviewerEmployeeId,
+        verifiedBy: reviewer.employeeId,
         verifiedAt: new Date(),
         rejectionReason: dto.decision === 'REJECTED' ? dto.rejectionReason : null,
       },

@@ -20,7 +20,8 @@ export class EmployeesService {
     private readonly numberGenerator: NumberGeneratorService,
   ) {}
 
-  async create(dto: CreateEmployeeDto) {
+  async create(dto: CreateEmployeeDto, actor: JwtPayloadUser) {
+    this.branchScope.assertAccess(actor, dto.branchId);
     const branch = await this.prisma.branch.findUnique({ where: { id: dto.branchId } });
     if (!branch || branch.deletedAt) {
       throw new AppException(ErrorCode.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND, 'Branch not found.');
@@ -72,8 +73,9 @@ export class EmployeesService {
     return employee;
   }
 
-  async update(id: string, dto: UpdateEmployeeDto) {
-    await this.findEmployeeOrThrow(id);
+  async update(id: string, dto: UpdateEmployeeDto, actor: JwtPayloadUser) {
+    const employee = await this.findEmployeeOrThrow(id);
+    this.branchScope.assertAccess(actor, employee.branchId);
     return this.prisma.employee.update({
       where: { id },
       data: {
@@ -87,8 +89,15 @@ export class EmployeesService {
     });
   }
 
-  async transferBranch(id: string, dto: TransferBranchDto) {
+  async transferBranch(id: string, dto: TransferBranchDto, actor: JwtPayloadUser) {
     const employee = await this.findEmployeeOrThrow(id);
+    // Moving staff between branches is inherently a cross-branch action — a
+    // branch-scoped manager has no authority over the destination branch, so
+    // this always requires a cross-branch role, unlike the branch-scoped
+    // checks below.
+    if (!this.branchScope.isCrossBranch(actor)) {
+      throw new AppException(ErrorCode.UNAUTHORIZED, HttpStatus.FORBIDDEN);
+    }
     const targetBranch = await this.prisma.branch.findUnique({ where: { id: dto.branchId } });
     if (!targetBranch || targetBranch.deletedAt) {
       throw new AppException(ErrorCode.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND, 'Target branch not found.');
@@ -100,8 +109,9 @@ export class EmployeesService {
     });
   }
 
-  async activate(id: string) {
+  async activate(id: string, actor: JwtPayloadUser) {
     const employee = await this.findEmployeeOrThrow(id);
+    this.branchScope.assertAccess(actor, employee.branchId);
     await this.prisma.$transaction([
       this.prisma.employee.update({ where: { id }, data: { status: 'ACTIVE', deactivatedAt: null } }),
       this.prisma.user.update({ where: { id: employee.userId }, data: { status: 'ACTIVE' } }),
@@ -109,8 +119,9 @@ export class EmployeesService {
     return this.findEmployeeOrThrow(id);
   }
 
-  async deactivate(id: string) {
+  async deactivate(id: string, actor: JwtPayloadUser) {
     const employee = await this.findEmployeeOrThrow(id);
+    this.branchScope.assertAccess(actor, employee.branchId);
     await this.prisma.$transaction([
       this.prisma.employee.update({ where: { id }, data: { status: 'INACTIVE', deactivatedAt: new Date() } }),
       this.prisma.user.update({ where: { id: employee.userId }, data: { status: 'INACTIVE' } }),
@@ -121,8 +132,9 @@ export class EmployeesService {
   }
 
   /** Resets password and force-revokes all active sessions/devices (spec #49). Returns the temp password once, if generated. */
-  async resetAccess(id: string, dto: ResetAccessDto): Promise<{ temporaryPassword?: string }> {
+  async resetAccess(id: string, dto: ResetAccessDto, actor: JwtPayloadUser): Promise<{ temporaryPassword?: string }> {
     const employee = await this.findEmployeeOrThrow(id);
+    this.branchScope.assertAccess(actor, employee.branchId);
     const newPassword = dto.newPassword || randomBytes(9).toString('base64url');
     const passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
 

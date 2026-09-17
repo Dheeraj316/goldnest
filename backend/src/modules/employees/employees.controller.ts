@@ -17,8 +17,8 @@ export class EmployeesController {
   @Post()
   @RequirePermissions('employee.manage')
   @Audit({ action: 'EMPLOYEE.CREATE', referenceType: 'Employee' })
-  create(@Body() dto: CreateEmployeeDto) {
-    return this.employeesService.create(dto);
+  create(@Body() dto: CreateEmployeeDto, @CurrentUser() user: JwtPayloadUser) {
+    return this.employeesService.create(dto, user);
   }
 
   @Get()
@@ -36,35 +36,35 @@ export class EmployeesController {
   @Patch(':id')
   @RequirePermissions('employee.manage')
   @Audit({ action: 'EMPLOYEE.UPDATE', referenceType: 'Employee' })
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateEmployeeDto) {
-    return this.employeesService.update(id, dto);
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateEmployeeDto, @CurrentUser() user: JwtPayloadUser) {
+    return this.employeesService.update(id, dto, user);
   }
 
   @Patch(':id/transfer')
   @RequirePermissions('employee.manage')
   @Audit({ action: 'EMPLOYEE.TRANSFER', referenceType: 'Employee' })
-  transferBranch(@Param('id', ParseUUIDPipe) id: string, @Body() dto: TransferBranchDto) {
-    return this.employeesService.transferBranch(id, dto);
+  transferBranch(@Param('id', ParseUUIDPipe) id: string, @Body() dto: TransferBranchDto, @CurrentUser() user: JwtPayloadUser) {
+    return this.employeesService.transferBranch(id, dto, user);
   }
 
   @Patch(':id/activate')
   @RequirePermissions('employee.manage')
   @Audit({ action: 'EMPLOYEE.ACTIVATE', referenceType: 'Employee' })
-  activate(@Param('id', ParseUUIDPipe) id: string) {
-    return this.employeesService.activate(id);
+  activate(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: JwtPayloadUser) {
+    return this.employeesService.activate(id, user);
   }
 
   @Patch(':id/deactivate')
   @RequirePermissions('employee.manage')
   @Audit({ action: 'EMPLOYEE.DEACTIVATE', referenceType: 'Employee' })
-  deactivate(@Param('id', ParseUUIDPipe) id: string) {
-    return this.employeesService.deactivate(id);
+  deactivate(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: JwtPayloadUser) {
+    return this.employeesService.deactivate(id, user);
   }
 
   @Patch(':id/reset-access')
   @RequirePermissions('employee.manage')
   @Audit({ action: 'EMPLOYEE.RESET_ACCESS', referenceType: 'Employee' })
-  resetAccess(@Param('id', ParseUUIDPipe) id: string, @Body() dto: ResetAccessDto) {
-    return this.employeesService.resetAccess(id, dto);
+  resetAccess(@Param('id', ParseUUIDPipe) id: string, @Body() dto: ResetAccessDto, @CurrentUser() user: JwtPayloadUser) {
+    return this.employeesService.resetAccess(id, dto, user);
   }
 }
