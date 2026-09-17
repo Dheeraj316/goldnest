@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { PageHero } from '@/components/PageHero';
 import { SectionHeading } from '@/components/SectionHeading';
 import { ShieldCheck, ScrollText, Users, Scale } from 'lucide-react';
+import { IMAGES } from '@/lib/images';
 
 export const metadata: Metadata = { title: 'About Us' };
 
@@ -39,6 +41,22 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="relative h-72 overflow-hidden sm:h-96">
+        <Image
+          src={IMAGES.vaultDoor}
+          alt="A steel bank vault door"
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/40 to-navy-950/10" />
+        <div className="container-page relative flex h-full items-end pb-10">
+          <p className="max-w-md font-display text-2xl font-semibold text-white sm:text-3xl">
+            Your gold doesn&apos;t just sit in a drawer. It&apos;s sealed, logged and vaulted.
+          </p>
         </div>
       </section>
 

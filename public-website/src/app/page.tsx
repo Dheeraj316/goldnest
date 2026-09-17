@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShieldCheck, Vault, Timer, SlidersHorizontal, ArrowRight, FileCheck2, Gem, Landmark, BadgeCheck } from 'lucide-react';
 import { GoldCalculator } from '@/components/GoldCalculator';
 import { SectionHeading } from '@/components/SectionHeading';
 import { Faq } from '@/components/Faq';
 import { homeFaqs } from '@/lib/content';
+import { IMAGES } from '@/lib/images';
 
 const TRUST_POINTS = [
   { icon: Vault, title: 'Bank-grade vault storage', description: 'Your gold is sealed, photographed and logged into a tracked vault the moment it’s received.' },
@@ -32,6 +34,17 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden bg-navy-950 text-white">
+        <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+          <Image
+            src={IMAGES.heroGoldBars}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="animate-kenburns object-cover opacity-45"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-navy-950/70 via-navy-950/85 to-navy-950" />
+        </div>
         <div className="absolute inset-0 bg-gold-radial" aria-hidden="true" />
         <div className="container-page relative grid gap-12 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
           <div>

@@ -21,6 +21,7 @@ import { NumberGeneratorModule } from './modules/number-generator/number-generat
 import { RbacModule } from './modules/rbac/rbac.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BranchesModule } from './modules/branches/branches.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { SettingsModule } from './modules/settings/settings.module';
@@ -54,6 +55,7 @@ import { SettingsModule } from './modules/settings/settings.module';
     RbacModule,
     AuthModule,
     BranchesModule,
+    OrganizationsModule,
     EmployeesModule,
     CustomersModule,
     SettingsModule,

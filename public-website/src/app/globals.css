@@ -34,3 +34,24 @@
     @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-gold-300 hover:text-gold-200 active:scale-[0.98];
   }
 }
+
+/* Slow, subtle zoom on hero background photography — reads as "alive"
+   without being distracting, and needs no video file. */
+@keyframes kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.09);
+  }
+}
+
+.animate-kenburns {
+  animation: kenburns 24s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-kenburns {
+    animation: none;
+  }
+}

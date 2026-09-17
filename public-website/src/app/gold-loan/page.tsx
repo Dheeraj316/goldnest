@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { PageHero } from '@/components/PageHero';
 import { SectionHeading } from '@/components/SectionHeading';
 import { GoldCalculator } from '@/components/GoldCalculator';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
+import { IMAGES } from '@/lib/images';
 
 export const metadata: Metadata = { title: 'Gold Loan' };
 
@@ -24,6 +26,22 @@ export default function GoldLoanPage() {
         title="Gold Loan"
         description="Unlock funds against your gold jewellery — quickly appraised, fairly valued, and safely held until you're ready to reclaim it."
       />
+
+      <section className="container-page -mt-10 relative">
+        <div className="relative h-56 overflow-hidden rounded-xl2 shadow-soft sm:h-72">
+          <Image
+            src={IMAGES.jewelleryCollection}
+            alt="Gold bangles, a chain and earrings ready for appraisal"
+            fill
+            sizes="(min-width: 1024px) 1152px, 100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-950/70 via-navy-950/10 to-transparent" />
+          <p className="absolute bottom-5 left-6 max-w-sm font-display text-lg font-semibold text-white sm:text-xl">
+            Every piece weighed, tested and valued — in front of you.
+          </p>
+        </div>
+      </section>
 
       <section className="py-20">
         <div className="container-page grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-start">

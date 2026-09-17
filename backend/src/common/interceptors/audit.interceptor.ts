@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -11,6 +11,8 @@ import { AuthenticatedRequest } from '../interfaces/authenticated-request.interf
 // richer before/after diff via AuditLogService (spec #44).
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(AuditInterceptor.name);
+
   constructor(
     private readonly reflector: Reflector,
     private readonly auditLogService: AuditLogService,
@@ -27,15 +29,24 @@ export class AuditInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap(() => {
-        void this.auditLogService.write({
-          userId: request.user?.userId,
-          employeeId: request.user?.employeeId,
-          action: meta.action,
-          referenceType: meta.referenceType,
-          referenceId,
-          ip: request.ip,
-          device: request.headers['user-agent'] as string,
-        });
+        // Fire-and-forget by design (the response shouldn't wait on this),
+        // but that makes it an unhandled promise rejection waiting to happen
+        // — and an unhandled rejection crashes the whole Node process. Audit
+        // logging must never be able to take the API down, so every failure
+        // is caught and logged instead of thrown.
+        this.auditLogService
+          .write({
+            userId: request.user?.userId,
+            employeeId: request.user?.employeeId,
+            action: meta.action,
+            referenceType: meta.referenceType,
+            referenceId,
+            ip: request.ip,
+            device: request.headers['user-agent'] as string,
+          })
+          .catch((error) => {
+            this.logger.error(`Failed to write audit log for action "${meta.action}": ${error instanceof Error ? error.message : error}`);
+          });
       }),
     );
   }

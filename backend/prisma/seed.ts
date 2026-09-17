@@ -85,18 +85,23 @@ async function main() {
   }
 
   console.log('Seeding organization & head office branch...');
-  const org = await prisma.organization.upsert({
-    where: { id: '00000000-0000-0000-0000-000000000001' },
-    update: {},
-    create: {
-      id: '00000000-0000-0000-0000-000000000001',
-      name: 'Goldnest',
-      // Placeholder legal entity name — replace with the actual registered
-      // company name once incorporation/NBFC or money-lender licensing is
-      // finalized (see the compliance notice in the root README).
-      legalName: 'Goldnest Financial Services Private Limited',
-    },
-  });
+  // Found by name rather than a hand-picked id: a hardcoded id like
+  // "...-0001" isn't a spec-compliant UUID (wrong version nibble), which
+  // class-validator's @IsUUID() correctly rejects the moment this id is
+  // round-tripped back from a client as, say, a branch's organizationId.
+  // Let Prisma's @default(uuid()) generate a real v4 id instead.
+  let org = await prisma.organization.findFirst({ where: { name: 'Goldnest' } });
+  if (!org) {
+    org = await prisma.organization.create({
+      data: {
+        name: 'Goldnest',
+        // Placeholder legal entity name — replace with the actual registered
+        // company name once incorporation/NBFC or money-lender licensing is
+        // finalized (see the compliance notice in the root README).
+        legalName: 'Goldnest Financial Services Private Limited',
+      },
+    });
+  }
 
   const branch = await prisma.branch.upsert({
     where: { code: 'HO01' },

@@ -7,9 +7,21 @@ import { AppModule } from './app.module';
 import { PrismaService } from './database/prisma.service';
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+
+  // Defense-in-depth: an unhandled rejection anywhere (a stray fire-and-
+  // forget call, a third-party library) otherwise crashes the entire Node
+  // process by default — unacceptable for a service moving money. This is a
+  // backstop, not a substitute for handling errors at the call site; every
+  // fire-and-forget call in this codebase should still .catch() its own
+  // errors (see AuditInterceptor for why — this exact class of bug took the
+  // whole API down during development).
+  process.on('unhandledRejection', (reason) => {
+    logger.error(`Unhandled promise rejection: ${reason instanceof Error ? reason.stack : reason}`);
+  });
+
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   const configService = app.get(ConfigService);
-  const logger = new Logger('Bootstrap');
 
   app.use(helmet());
 
