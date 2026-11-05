@@ -3,6 +3,12 @@
 // https://staff.goldnest.in — set NEXT_PUBLIC_ADMIN_URL to override.
 export const ADMIN_WEB_URL = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3002';
 
+// The real backend — same API every other app in the platform talks to. Only
+// the unauthenticated /public/* routes are reachable from here (see
+// backend/src/modules/public), so branch data and enquiries submitted on this
+// site land in the same database everyone else works from, not a silo.
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+
 export const COMPANY = {
   brandName: 'Goldnest',
   legalName: 'Goldnest Financial Services Private Limited (proposed)',

@@ -59,8 +59,9 @@ export type Branch = {
   lng: number;
 };
 
-// Placeholder branch network for the locator UI. Replace with real branch
-// data (ideally sourced from the backend's /branches endpoint) before launch.
+// Fallback branch network, used only if the backend at NEXT_PUBLIC_API_URL is
+// unreachable — see lib/api.ts#getPublicBranches, which is what the locator
+// page actually renders (real branches from the shared database).
 export const branches: Branch[] = [
   {
     code: 'HO01',

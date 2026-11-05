@@ -38,3 +38,6 @@ Thumbs.db
 ## Misc
 *.tsbuildinfo
 .turbo/
+
+## Large pitch decks and videos (not source code, too big for GitHub)
+documentation/presentations/

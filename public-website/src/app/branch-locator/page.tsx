@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { PageHero } from '@/components/PageHero';
-import { branches } from '@/lib/content';
+import { getPublicBranches } from '@/lib/api';
 import { BranchLocatorClient } from './BranchLocatorClient';
 
 export const metadata: Metadata = { title: 'Branch Locator' };
 
-export default function BranchLocatorPage() {
+export default async function BranchLocatorPage() {
+  const branches = await getPublicBranches();
   return (
     <>
       <PageHero
