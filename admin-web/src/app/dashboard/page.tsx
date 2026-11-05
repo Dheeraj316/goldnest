@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Building2, Users, Contact, ClipboardCheck, ArrowRight, ScrollText } from 'lucide-react';
+import { Building2, Users, Contact, ClipboardCheck, ArrowRight, ScrollText, Landmark, FileText } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
 import { StatCard } from '@/components/StatCard';
 import { apiFetch } from '@/lib/api-server';
 import { getCurrentUser } from '@/lib/auth';
-import type { Branch, Employee, ConfigurationVersion, AuditLog, Paginated } from '@/lib/types';
+import type { Branch, Employee, ConfigurationVersion, AuditLog, Paginated, Loan, LoanApplication } from '@/lib/types';
 import { formatDateTime } from '@/lib/format';
 
 export const metadata: Metadata = { title: 'Dashboard' };
@@ -21,23 +21,33 @@ async function safe<T>(promise: Promise<T>, fallback: T): Promise<T> {
 export default async function DashboardPage() {
   const user = await getCurrentUser();
 
-  const [branches, employees, customers, pendingChanges, recentAudit] = await Promise.all([
+  const [branches, employees, customers, pendingChanges, recentAudit, applications, loans] = await Promise.all([
     safe(apiFetch<Branch[]>('/branches'), []),
     safe(apiFetch<Employee[]>('/employees'), []),
     safe(apiFetch<Paginated<unknown>>('/customers?pageSize=1'), { items: [], total: 0, page: 1, pageSize: 1 }),
     safe(apiFetch<ConfigurationVersion[]>('/settings/pending-changes'), []),
     safe(apiFetch<Paginated<AuditLog>>('/audit-logs?pageSize=6'), { items: [], total: 0, page: 1, pageSize: 6 }),
+    safe(apiFetch<Paginated<LoanApplication>>('/loan-applications?pageSize=100'), { items: [], total: 0, page: 1, pageSize: 100 }),
+    safe(apiFetch<Paginated<Loan>>('/loans?pageSize=100'), { items: [], total: 0, page: 1, pageSize: 100 }),
   ]);
+
+  const activeLoans = loans.items.filter((l) => l.status === 'ACTIVE' || l.status === 'OVERDUE').length;
+  const totalDisbursed = loans.items
+    .filter((l) => l.disbursedAt)
+    .reduce((sum, l) => sum + Number(l.principalAmount), 0);
+  const pendingApplications = applications.items.filter((a) => !['CLOSED', 'REJECTED', 'ACTIVE'].includes(a.status)).length;
 
   return (
     <div>
       <PageHeader title="Dashboard" description="Live counts from the Goldnest platform." />
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Branches" value={branches.length} icon={Building2} />
         <StatCard label="Employees" value={employees.length} icon={Users} />
         <StatCard label="Customers" value={customers.total} icon={Contact} />
-        <StatCard label="Pending approvals" value={pendingChanges.length} icon={ClipboardCheck} hint="Configuration changes awaiting a second approver" />
+        <StatCard label="Applications in progress" value={pendingApplications} icon={FileText} />
+        <StatCard label="Active loans" value={activeLoans} icon={Landmark} hint={`₹${totalDisbursed.toLocaleString('en-IN')} disbursed`} />
+        <StatCard label="Pending approvals" value={pendingChanges.length} icon={ClipboardCheck} hint="Configuration changes" />
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">

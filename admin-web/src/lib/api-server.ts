@@ -1,19 +1,9 @@
 import 'server-only';
 import { API_URL } from './config';
 import { getAccessToken } from './session';
+import { ApiError } from './api-error';
 
-export class ApiError extends Error {
-  status: number;
-  errorCode: string;
-  correlationId?: string;
-
-  constructor(status: number, errorCode: string, message: string, correlationId?: string) {
-    super(message);
-    this.status = status;
-    this.errorCode = errorCode;
-    this.correlationId = correlationId;
-  }
-}
+export { ApiError };
 
 // Every call to the backend goes through here, server-side only. `proxy.ts`
 // is responsible for keeping the access-token cookie fresh before a request

@@ -16,11 +16,14 @@ export function SidebarLink({ href, icon, label }: { href: string; icon: ReactNo
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition ${
-        isActive ? 'bg-white/10 text-white' : 'text-white/55 hover:bg-white/5 hover:text-white/85'
+      className={`group relative flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ease-smooth ${
+        isActive
+          ? 'bg-gradient-to-r from-white/12 to-white/[0.03] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]'
+          : 'text-white/50 hover:bg-white/[0.06] hover:text-white/90'
       }`}
     >
-      <span className={isActive ? 'text-gold-300' : ''}>{icon}</span>
+      {isActive && <span className="absolute -left-3 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-gold-400" />}
+      <span className={`transition-colors duration-200 ${isActive ? 'text-gold-300' : 'text-white/40 group-hover:text-white/70'}`}>{icon}</span>
       {label}
     </Link>
   );

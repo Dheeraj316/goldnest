@@ -12,6 +12,8 @@ export const metadata: Metadata = { title: 'Employees' };
 export default async function EmployeesPage() {
   const user = await getCurrentUser();
   const canManage = hasPermission(user, 'employee.manage');
+  // Only a Super Admin may create, change or reset a Super Admin — the API enforces it; the screen just doesn't offer it.
+  const isSuperAdmin = user?.roleCode === 'SUPER_ADMIN';
 
   const [employees, branches, roles] = await Promise.all([
     apiFetch<Employee[]>('/employees'),
@@ -24,7 +26,7 @@ export default async function EmployeesPage() {
       <PageHeader
         title="Employees"
         description={`${employees.length} employee${employees.length === 1 ? '' : 's'}`}
-        action={canManage ? <NewEmployeeForm branches={branches} roles={roles} /> : undefined}
+        action={canManage ? <NewEmployeeForm branches={branches} roles={isSuperAdmin ? roles : roles.filter((r) => r.code !== 'SUPER_ADMIN')} /> : undefined}
       />
 
       <div className="card overflow-hidden">
@@ -57,7 +59,11 @@ export default async function EmployeesPage() {
                 </td>
                 {canManage && (
                   <td className="px-5 py-3.5">
-                    <EmployeeRowActions id={employee.id} status={employee.status} />
+                    {employee.role.code === 'SUPER_ADMIN' && !isSuperAdmin ? (
+                      <p className="text-right text-xs text-ink-light/60">Only a Super Admin can change this account</p>
+                    ) : (
+                      <EmployeeRowActions id={employee.id} status={employee.status} />
+                    )}
                   </td>
                 )}
               </tr>

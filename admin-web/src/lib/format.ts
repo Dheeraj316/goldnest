@@ -18,3 +18,21 @@ export function formatDateTime(value: string | Date): string {
 export function formatDate(value: string | Date): string {
   return new Date(value).toLocaleDateString(LOCALE, { timeZone: TIME_ZONE });
 }
+
+export function formatTime(value: string | Date): string {
+  return new Date(value).toLocaleTimeString(LOCALE, { timeZone: TIME_ZONE });
+}
+
+/** Indian-grouped rupee amount with two decimals, e.g. 1216597.19 -> ₹12,16,597.19. Accepts the backend's money strings. */
+export function formatMoney(value: string | number): string {
+  return `₹${Number(value).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+/** Compact rupee amount for tight spaces, e.g. 1216597 -> ₹12.17 L, 25000000 -> ₹2.50 Cr. */
+export function formatMoneyCompact(value: string | number): string {
+  const n = Number(value);
+  const abs = Math.abs(n);
+  if (abs >= 1e7) return `₹${(n / 1e7).toFixed(2)} Cr`;
+  if (abs >= 1e5) return `₹${(n / 1e5).toFixed(2)} L`;
+  return `₹${n.toLocaleString(LOCALE, { maximumFractionDigits: 0 })}`;
+}

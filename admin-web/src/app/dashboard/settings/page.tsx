@@ -11,14 +11,13 @@ import { PendingChangeRow } from './PendingChangeRow';
 export const metadata: Metadata = { title: 'Configuration' };
 
 export default async function SettingsPage() {
-  const [user, settings, pendingChanges] = await Promise.all([
-    getCurrentUser(),
-    apiFetch<Setting[]>('/settings'),
-    apiFetch<ConfigurationVersion[]>('/settings/pending-changes'),
-  ]);
+  const [user, settings] = await Promise.all([getCurrentUser(), apiFetch<Setting[]>('/settings')]);
 
   const canManage = hasPermission(user, 'setting.manage');
   const canApprove = hasPermission(user, 'setting.approve');
+  // The backend only lists pending changes for approvers (setting.approve). Asking without it would fail the
+  // whole page with a permission error for someone who is allowed to view the settings themselves.
+  const pendingChanges = canApprove ? await apiFetch<ConfigurationVersion[]>('/settings/pending-changes') : [];
 
   return (
     <div>

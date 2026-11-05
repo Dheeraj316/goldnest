@@ -13,25 +13,31 @@
 
 @layer components {
   .card {
-    @apply rounded-xl2 border border-gold-100 bg-white shadow-soft;
+    @apply relative rounded-xl2 border border-gold-100/70 bg-white shadow-elevated transition-shadow duration-300 ease-smooth;
+  }
+  .card-interactive {
+    @apply card cursor-pointer hover:-translate-y-0.5 hover:shadow-elevated-hover transition duration-300 ease-smooth;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-gold-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-gold-400 to-gold-500 px-4 py-2.5 text-sm font-semibold text-white shadow-gold transition-all duration-200 ease-smooth hover:shadow-gold-hover hover:-translate-y-px hover:from-gold-400 hover:to-gold-600 active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-navy-900/15 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:border-gold-400 hover:text-gold-700 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-navy-900/15 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 shadow-[0_1px_2px_rgba(20,17,15,0.04)] transition-all duration-200 ease-smooth hover:border-gold-400 hover:text-gold-700 hover:-translate-y-px hover:shadow-soft active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:translate-y-0;
   }
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600 transition-all duration-200 ease-smooth hover:bg-rose-100 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50 disabled:translate-y-0;
   }
   .input {
-    @apply w-full rounded-lg border border-navy-900/15 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-100;
+    @apply w-full rounded-lg border border-navy-900/15 bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition-all duration-200 ease-smooth placeholder:text-ink-light/40 focus:border-gold-400 focus:ring-4 focus:ring-gold-100;
   }
   .label {
     @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-light/70;
   }
   .badge {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+  .table-row-hover {
+    @apply transition-colors duration-150 hover:bg-gold-50/50;
   }
 }
 

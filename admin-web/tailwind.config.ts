@@ -49,9 +49,22 @@ const config: Config = {
       },
       boxShadow: {
         soft: '0 2px 8px -2px rgba(20,17,15,0.06), 0 8px 24px -12px rgba(20,17,15,0.10)',
+        elevated: '0 1px 2px rgba(20,17,15,0.04), 0 12px 32px -8px rgba(20,17,15,0.14), 0 4px 12px -4px rgba(20,17,15,0.08)',
+        'elevated-hover': '0 2px 4px rgba(20,17,15,0.05), 0 20px 48px -12px rgba(20,17,15,0.20), 0 8px 20px -6px rgba(20,17,15,0.12)',
+        gold: '0 8px 24px -6px rgba(207,162,58,0.35)',
+        'gold-hover': '0 12px 32px -6px rgba(207,162,58,0.45)',
+        'inner-line': 'inset 0 0 0 1px rgba(20,17,15,0.04)',
       },
       borderRadius: {
         xl2: '1.1rem',
+        xl3: '1.5rem',
+      },
+      transitionTimingFunction: {
+        smooth: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+      backgroundImage: {
+        'sidebar-sheen': 'radial-gradient(circle at 15% 0%, rgba(207,162,58,0.16), transparent 55%), linear-gradient(180deg, #0A0F1A 0%, #0D1420 55%, #0A0F1A 100%)',
+        'card-sheen': 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%)',
       },
     },
   },
