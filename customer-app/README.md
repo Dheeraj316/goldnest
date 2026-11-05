@@ -1,9 +1,17 @@
-# Customer mobile app (Flutter) — not yet built
+# customer_app
 
-Planned stack: Flutter/Dart, Clean Architecture + feature-based modules,
-Riverpod or Bloc, Dio, secure storage + Drift/SQLite, OAuth2/JWT against the
-[`backend`](../backend) API, biometric login.
+A new Flutter project.
 
-Scoped for **Phase 6** of [`documentation/roadmap.md`](../documentation/roadmap.md),
-after the loan/payment/collateral APIs it depends on exist. See the root
-[`README.md`](../README.md) for overall project status.
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
+- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
