@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDateString, IsEmail, IsEnum, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
+import { IsDateString, IsDefined, IsEmail, IsEnum, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
 import { Gender } from '@prisma/client';
 import { DeviceInfoDto } from './device-info.dto';
 
@@ -64,6 +64,7 @@ export class CompleteCustomerRegistrationDto {
   address: AddressDto;
 
   @ApiProperty({ type: DeviceInfoDto })
+  @IsDefined()
   @ValidateNested()
   @Type(() => DeviceInfoDto)
   device: DeviceInfoDto;

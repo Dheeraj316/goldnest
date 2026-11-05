@@ -25,6 +25,20 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
 import { EmployeesModule } from './modules/employees/employees.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { LoanProductsModule } from './modules/loan-products/loan-products.module';
+import { InterestEngineModule } from './modules/interest-engine/interest-engine.module';
+import { LoansModule } from './modules/loans/loans.module';
+import { PublicModule } from './modules/public/public.module';
+import { CollectionsModule } from './modules/collections/collections.module';
+import { ReportsModule } from './modules/reports/reports.module';
+import { DocumentsModule } from './modules/documents/documents.module';
+import { AuctionsModule } from './modules/auctions/auctions.module';
+import { VaultModule } from './modules/vault/vault.module';
+import { SupportModule } from './modules/support/support.module';
+import { RiskAlertsModule } from './modules/risk-alerts/risk-alerts.module';
+import { CashManagementModule } from './modules/cash-management/cash-management.module';
+import { ReconciliationModule } from './modules/reconciliation/reconciliation.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -46,6 +60,7 @@ import { SettingsModule } from './modules/settings/settings.module';
       }),
     }),
 
+    ScheduleModule.forRoot(),
     PrismaModule,
     CommonModule,
 
@@ -59,6 +74,19 @@ import { SettingsModule } from './modules/settings/settings.module';
     EmployeesModule,
     CustomersModule,
     SettingsModule,
+    LoanProductsModule,
+    InterestEngineModule,
+    LoansModule,
+    PublicModule,
+    CollectionsModule,
+    ReportsModule,
+    DocumentsModule,
+    AuctionsModule,
+    VaultModule,
+    SupportModule,
+    RiskAlertsModule,
+    CashManagementModule,
+    ReconciliationModule,
   ],
   providers: [
     // Order matters: exceptions -> correlation id -> auth -> permissions -> audit.

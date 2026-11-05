@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../../database/prisma.service';
@@ -20,10 +20,18 @@ const REQUEST_WINDOW_MINUTES = 15;
 // a Redis counter if/when request volume needs it — the interface stays the same.
 @Injectable()
 export class OtpService {
+  private readonly logger = new Logger(OtpService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly smsService: SmsService,
-  ) {}
+  ) {
+    if (process.env.DEV_FIXED_OTP) {
+      this.logger.warn(
+        `DEV_FIXED_OTP is set — every OTP issued will be "${process.env.DEV_FIXED_OTP}". Demo/dev only; unset before real use.`,
+      );
+    }
+  }
 
   async requestOtp(mobile: string, purpose: OtpPurpose, ip?: string): Promise<void> {
     const windowStart = new Date(Date.now() - REQUEST_WINDOW_MINUTES * 60_000);
@@ -93,6 +101,13 @@ export class OtpService {
   }
 
   private generateCode(): string {
+    // TEMPORARY, this phase only (stakeholder demo): a fixed OTP lets anyone
+    // testing the flow sign in without pulling the code from server logs.
+    // Remove DEV_FIXED_OTP from .env to go back to real random codes — never
+    // set this outside a throwaway dev/demo database.
+    if (process.env.DEV_FIXED_OTP) {
+      return process.env.DEV_FIXED_OTP;
+    }
     const min = 10 ** (OTP_LENGTH - 1);
     const max = 10 ** OTP_LENGTH - 1;
     // Cryptographically secure — Math.random() is predictable and must never

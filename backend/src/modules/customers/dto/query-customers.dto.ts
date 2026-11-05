@@ -1,12 +1,19 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
+
+const KYC_STATUSES = ['PENDING', 'IN_REVIEW', 'VERIFIED', 'REJECTED', 'EXPIRED'];
 
 export class QueryCustomersDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   mobile?: string;
+
+  @ApiPropertyOptional({ enum: KYC_STATUSES })
+  @IsOptional()
+  @IsIn(KYC_STATUSES)
+  kycStatus?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

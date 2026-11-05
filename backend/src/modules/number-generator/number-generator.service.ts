@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 
 export type SequenceEntityType =
-  'CUSTOMER' | 'LOAN' | 'PAYMENT' | 'COLLATERAL' | 'PACKET' | 'AUCTION' | 'APPLICATION' | 'APPOINTMENT' | 'RECEIPT' | 'TICKET' | 'EMPLOYEE';
+  'CUSTOMER' | 'LOAN' | 'PAYMENT' | 'COLLATERAL' | 'PACKET' | 'AUCTION' | 'APPLICATION' | 'APPOINTMENT' | 'RECEIPT' | 'TICKET' | 'EMPLOYEE' | 'COLLECTION_CASE';
 
 // Server-side controlled, gap-tolerant sequence numbers (spec #63). Numbers
 // are NEVER generated client-side and never derived from a row's own primary
@@ -96,6 +96,13 @@ export class NumberGeneratorService {
     const year = this.currentYear();
     const seq = await this.nextSequenceValue('TICKET', `${year}`);
     return `TCK-${year}-${this.pad(seq)}`;
+  }
+
+  /** CC-2026-000001 (not "COL-", which collateral already uses) */
+  async generateCollectionCaseNumber(): Promise<string> {
+    const year = this.currentYear();
+    const seq = await this.nextSequenceValue('COLLECTION_CASE', `${year}`);
+    return `CC-${year}-${this.pad(seq)}`;
   }
 
   /** EMP-BLR-000001 */

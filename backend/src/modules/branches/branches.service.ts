@@ -46,6 +46,13 @@ export class BranchesService {
     return this.prisma.branch.findMany({ where: { id: user.branchId, deletedAt: null } });
   }
 
+  // Customer-facing: every active branch, unscoped — a customer isn't tied
+  // to a branch until their first loan application, so there's no branch to
+  // scope by yet (same reasoning as the public website's branch locator).
+  async listActive() {
+    return this.prisma.branch.findMany({ where: { deletedAt: null, status: 'ACTIVE' }, orderBy: { name: 'asc' } });
+  }
+
   async findOne(id: string, user: JwtPayloadUser) {
     const branch = await this.prisma.branch.findUnique({ where: { id } });
     if (!branch || branch.deletedAt) {

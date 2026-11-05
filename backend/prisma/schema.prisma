@@ -26,14 +26,14 @@ datasource db {
 // ----------------------------------------------------------------------------
 
 model Organization {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String
-  legalName String   @map("legal_name")
-  cinOrRegNumber String? @map("cin_or_reg_number")
-  status    ActiveStatus @default(ACTIVE)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  id             String       @id @default(uuid()) @db.Uuid
+  name           String
+  legalName      String       @map("legal_name")
+  cinOrRegNumber String?      @map("cin_or_reg_number")
+  status         ActiveStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
 
   regions  Region[]
   branches Branch[]
@@ -42,14 +42,14 @@ model Organization {
 }
 
 model Region {
-  id             String   @id @default(uuid()) @db.Uuid
-  organizationId String   @map("organization_id") @db.Uuid
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
   name           String
-  code           String   @unique
+  code           String       @unique
   status         ActiveStatus @default(ACTIVE)
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-  deletedAt      DateTime? @map("deleted_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
 
   organization Organization @relation(fields: [organizationId], references: [id])
   branches     Branch[]
@@ -58,38 +58,40 @@ model Region {
 }
 
 model Branch {
-  id               String   @id @default(uuid()) @db.Uuid
-  organizationId   String   @map("organization_id") @db.Uuid
-  regionId         String?  @map("region_id") @db.Uuid
-  code             String   @unique
-  name             String
-  addressLine1     String   @map("address_line1")
-  addressLine2     String?  @map("address_line2")
-  city             String
-  state            String
-  pinCode          String   @map("pin_code")
-  phone            String?
-  email            String?
-  workingHours     Json?    @map("working_hours")
-  cashLimit        Decimal  @default(0) @map("cash_limit") @db.Decimal(18, 2)
-  status           ActiveStatus @default(ACTIVE)
-  createdBy        String?  @map("created_by") @db.Uuid
-  updatedBy        String?  @map("updated_by") @db.Uuid
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
-  deletedAt        DateTime? @map("deleted_at")
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  regionId       String?      @map("region_id") @db.Uuid
+  code           String       @unique
+  name           String
+  addressLine1   String       @map("address_line1")
+  addressLine2   String?      @map("address_line2")
+  city           String
+  state          String
+  pinCode        String       @map("pin_code")
+  phone          String?
+  email          String?
+  latitude       Decimal?     @db.Decimal(9, 6)
+  longitude      Decimal?     @db.Decimal(9, 6)
+  workingHours   Json?        @map("working_hours")
+  cashLimit      Decimal      @default(0) @map("cash_limit") @db.Decimal(18, 2)
+  status         ActiveStatus @default(ACTIVE)
+  createdBy      String?      @map("created_by") @db.Uuid
+  updatedBy      String?      @map("updated_by") @db.Uuid
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
 
-  organization      Organization @relation(fields: [organizationId], references: [id])
-  region             Region?     @relation(fields: [regionId], references: [id])
-  employees          Employee[]
-  customers          Customer[]
-  loanApplications   LoanApplication[]
-  loans              Loan[]
-  vaults             Vault[]
-  approvalLimits     BranchApprovalLimit[]
-  branchProducts     BranchProduct[]
-  cashTransactions   CashTransaction[]
-  appointments       Appointment[]
+  organization     Organization          @relation(fields: [organizationId], references: [id])
+  region           Region?               @relation(fields: [regionId], references: [id])
+  employees        Employee[]
+  customers        Customer[]
+  loanApplications LoanApplication[]
+  loans            Loan[]
+  vaults           Vault[]
+  approvalLimits   BranchApprovalLimit[]
+  branchProducts   BranchProduct[]
+  cashTransactions CashTransaction[]
+  appointments     Appointment[]
 
   @@index([organizationId])
   @@map("branches")
@@ -97,15 +99,15 @@ model Branch {
 
 // Configurable per-branch, per-role approval thresholds (see spec #35).
 model BranchApprovalLimit {
-  id           String   @id @default(uuid()) @db.Uuid
-  branchId     String   @map("branch_id") @db.Uuid
-  roleId       String   @map("role_id") @db.Uuid
-  minAmount    Decimal  @map("min_amount") @db.Decimal(18, 2)
-  maxAmount    Decimal? @map("max_amount") @db.Decimal(18, 2)
-  effectiveFrom DateTime @default(now()) @map("effective_from")
+  id            String    @id @default(uuid()) @db.Uuid
+  branchId      String    @map("branch_id") @db.Uuid
+  roleId        String    @map("role_id") @db.Uuid
+  minAmount     Decimal   @map("min_amount") @db.Decimal(18, 2)
+  maxAmount     Decimal?  @map("max_amount") @db.Decimal(18, 2)
+  effectiveFrom DateTime  @default(now()) @map("effective_from")
   effectiveTo   DateTime? @map("effective_to")
-  createdAt    DateTime @default(now()) @map("created_at")
-  createdBy    String?  @map("created_by") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at")
+  createdBy     String?   @map("created_by") @db.Uuid
 
   branch Branch @relation(fields: [branchId], references: [id])
   role   Role   @relation(fields: [roleId], references: [id])
@@ -144,43 +146,43 @@ enum ActiveStatus {
 
 // Base authentication identity, one row per login-capable actor (customer or employee).
 model User {
-  id                String    @id @default(uuid()) @db.Uuid
-  type              UserType
-  mobile            String    @unique
-  email             String?   @unique
-  passwordHash      String?   @map("password_hash")
-  mfaEnabled        Boolean   @default(false) @map("mfa_enabled")
-  mfaSecret         String?   @map("mfa_secret")
-  status            ActiveStatus @default(ACTIVE)
-  lastLoginAt       DateTime? @map("last_login_at")
-  failedLoginCount  Int       @default(0) @map("failed_login_count")
-  lockedUntil       DateTime? @map("locked_until")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  id               String       @id @default(uuid()) @db.Uuid
+  type             UserType
+  mobile           String       @unique
+  email            String?      @unique
+  passwordHash     String?      @map("password_hash")
+  mfaEnabled       Boolean      @default(false) @map("mfa_enabled")
+  mfaSecret        String?      @map("mfa_secret")
+  status           ActiveStatus @default(ACTIVE)
+  lastLoginAt      DateTime?    @map("last_login_at")
+  failedLoginCount Int          @default(0) @map("failed_login_count")
+  lockedUntil      DateTime?    @map("locked_until")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  deletedAt        DateTime?    @map("deleted_at")
 
-  customer     Customer?
-  employee     Employee?
-  devices      UserDevice[]
+  customer      Customer?
+  employee      Employee?
+  devices       UserDevice[]
   refreshTokens RefreshToken[]
-  auditLogs    AuditLog[]
+  auditLogs     AuditLog[]
 
   @@map("users")
 }
 
 // Device binding + "logout all devices" (spec #14, #58).
 model UserDevice {
-  id           String   @id @default(uuid()) @db.Uuid
-  userId       String   @map("user_id") @db.Uuid
-  deviceId     String   @map("device_id")
-  deviceName   String?  @map("device_name")
-  platform     String?
-  pushToken    String?  @map("push_token")
-  isTrusted    Boolean  @default(false) @map("is_trusted")
-  lastSeenAt   DateTime? @map("last_seen_at")
-  lastSeenIp   String?  @map("last_seen_ip")
-  createdAt    DateTime @default(now()) @map("created_at")
-  revokedAt    DateTime? @map("revoked_at")
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  deviceId   String    @map("device_id")
+  deviceName String?   @map("device_name")
+  platform   String?
+  pushToken  String?   @map("push_token")
+  isTrusted  Boolean   @default(false) @map("is_trusted")
+  lastSeenAt DateTime? @map("last_seen_at")
+  lastSeenIp String?   @map("last_seen_ip")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  revokedAt  DateTime? @map("revoked_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -190,16 +192,16 @@ model UserDevice {
 
 // Refresh-token rotation store — never trust a bare JWT for session state.
 model RefreshToken {
-  id          String   @id @default(uuid()) @db.Uuid
-  userId      String   @map("user_id") @db.Uuid
-  deviceId    String?  @map("device_id")
-  tokenHash   String   @unique @map("token_hash")
-  familyId    String   @map("family_id") @db.Uuid
-  issuedAt    DateTime @default(now()) @map("issued_at")
-  expiresAt   DateTime @map("expires_at")
-  revokedAt   DateTime? @map("revoked_at")
-  replacedBy  String?  @map("replaced_by") @db.Uuid
-  ip          String?
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  deviceId   String?   @map("device_id")
+  tokenHash  String    @unique @map("token_hash")
+  familyId   String    @map("family_id") @db.Uuid
+  issuedAt   DateTime  @default(now()) @map("issued_at")
+  expiresAt  DateTime  @map("expires_at")
+  revokedAt  DateTime? @map("revoked_at")
+  replacedBy String?   @map("replaced_by") @db.Uuid
+  ip         String?
 
   user User @relation(fields: [userId], references: [id])
 
@@ -210,15 +212,15 @@ model RefreshToken {
 
 // OTP throttling / verification (backed operationally by Redis; persisted for audit).
 model OtpChallenge {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String    @id @default(uuid()) @db.Uuid
   mobile      String
   purpose     String // LOGIN | REGISTRATION | TRANSACTION | PASSWORD_RESET
-  codeHash    String   @map("code_hash")
-  attempts    Int      @default(0)
-  maxAttempts Int      @default(5) @map("max_attempts")
-  expiresAt   DateTime @map("expires_at")
+  codeHash    String    @map("code_hash")
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(5) @map("max_attempts")
+  expiresAt   DateTime  @map("expires_at")
   consumedAt  DateTime? @map("consumed_at")
-  createdAt   DateTime @default(now()) @map("created_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
   ip          String?
 
   @@index([mobile, purpose])
@@ -226,27 +228,27 @@ model OtpChallenge {
 }
 
 model Role {
-  id          String   @id @default(uuid()) @db.Uuid
-  code        String   @unique // SUPER_ADMIN, ADMIN, REGIONAL_MANAGER, BRANCH_MANAGER, ...
+  id          String       @id @default(uuid()) @db.Uuid
+  code        String       @unique // SUPER_ADMIN, ADMIN, REGIONAL_MANAGER, BRANCH_MANAGER, ...
   name        String
   description String?
-  isSystem    Boolean  @default(false) @map("is_system")
+  isSystem    Boolean      @default(false) @map("is_system")
   status      ActiveStatus @default(ACTIVE)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
 
-  permissions RolePermission[]
-  employees   Employee[]
+  permissions    RolePermission[]
+  employees      Employee[]
   approvalLimits BranchApprovalLimit[]
 
   @@map("roles")
 }
 
 model Permission {
-  id          String   @id @default(uuid()) @db.Uuid
-  code        String   @unique // e.g. "loan.approve", "collateral.release"
-  resource    String   // e.g. "loan"
-  action      String   // e.g. "approve"
+  id          String  @id @default(uuid()) @db.Uuid
+  code        String  @unique // e.g. "loan.approve", "collateral.release"
+  resource    String // e.g. "loan"
+  action      String // e.g. "approve"
   description String?
 
   roles RolePermission[]
@@ -270,32 +272,34 @@ model RolePermission {
 // ----------------------------------------------------------------------------
 
 model Employee {
-  id             String   @id @default(uuid()) @db.Uuid
-  userId         String   @unique @map("user_id") @db.Uuid
-  employeeCode   String   @unique @map("employee_code")
-  branchId       String   @map("branch_id") @db.Uuid
-  roleId         String   @map("role_id") @db.Uuid
-  firstName      String   @map("first_name")
-  lastName       String?  @map("last_name")
-  email          String?
-  mobile         String
-  status         ActiveStatus @default(ACTIVE)
-  joinedAt       DateTime? @map("joined_at")
-  deactivatedAt  DateTime? @map("deactivated_at")
-  createdBy      String?  @map("created_by") @db.Uuid
-  updatedBy      String?  @map("updated_by") @db.Uuid
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-  deletedAt      DateTime? @map("deleted_at")
+  id            String       @id @default(uuid()) @db.Uuid
+  userId        String       @unique @map("user_id") @db.Uuid
+  employeeCode  String       @unique @map("employee_code")
+  branchId      String       @map("branch_id") @db.Uuid
+  roleId        String       @map("role_id") @db.Uuid
+  firstName     String       @map("first_name")
+  lastName      String?      @map("last_name")
+  email         String?
+  mobile        String
+  status        ActiveStatus @default(ACTIVE)
+  joinedAt      DateTime?    @map("joined_at")
+  deactivatedAt DateTime?    @map("deactivated_at")
+  createdBy     String?      @map("created_by") @db.Uuid
+  updatedBy     String?      @map("updated_by") @db.Uuid
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  deletedAt     DateTime?    @map("deleted_at")
 
   user   User   @relation(fields: [userId], references: [id])
   branch Branch @relation(fields: [branchId], references: [id])
   role   Role   @relation(fields: [roleId], references: [id])
 
-  appraisals            Appraisal[]
-  collateralMovements   CollateralMovement[]
-  loanApprovals         LoanApproval[]
-  auditLogsAsActor      AuditLog[] @relation("EmployeeAuditActor")
+  appraisals           Appraisal[]
+  collateralMovements  CollateralMovement[]
+  loanApprovals        LoanApproval[]
+  collectionCases      CollectionCase[]     @relation("CollectionAssignee")
+  collectionActivities CollectionActivity[]
+  auditLogsAsActor     AuditLog[]           @relation("EmployeeAuditActor")
 
   @@index([branchId])
   @@map("employees")
@@ -321,34 +325,35 @@ enum KycStatus {
 }
 
 model Customer {
-  id               String    @id @default(uuid()) @db.Uuid
-  userId           String    @unique @map("user_id") @db.Uuid
-  customerCode     String    @unique @map("customer_code") // CUS-2026-000001
-  branchId         String?   @map("branch_id") @db.Uuid
-  firstName        String    @map("first_name")
-  lastName         String?   @map("last_name")
-  dateOfBirth      DateTime? @map("date_of_birth") @db.Date
-  gender           Gender?
-  email            String?
-  mobile           String
-  profilePhotoKey  String?   @map("profile_photo_key")
-  kycStatus        KycStatus @default(PENDING) @map("kyc_status")
-  riskFlags        Json?     @map("risk_flags")
-  status           ActiveStatus @default(ACTIVE)
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @updatedAt @map("updated_at")
-  deletedAt        DateTime? @map("deleted_at")
+  id              String       @id @default(uuid()) @db.Uuid
+  userId          String       @unique @map("user_id") @db.Uuid
+  customerCode    String       @unique @map("customer_code") // CUS-2026-000001
+  branchId        String?      @map("branch_id") @db.Uuid
+  firstName       String       @map("first_name")
+  lastName        String?      @map("last_name")
+  dateOfBirth     DateTime?    @map("date_of_birth") @db.Date
+  gender          Gender?
+  email           String?
+  mobile          String
+  profilePhotoKey String?      @map("profile_photo_key")
+  kycStatus       KycStatus    @default(PENDING) @map("kyc_status")
+  riskFlags       Json?        @map("risk_flags")
+  status          ActiveStatus @default(ACTIVE)
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  deletedAt       DateTime?    @map("deleted_at")
 
-  user      User      @relation(fields: [userId], references: [id])
-  branch    Branch?   @relation(fields: [branchId], references: [id])
-  addresses Address[]
-  kycRecords KycRecord[]
-  documents  Document[]
-  loanApplications LoanApplication[]
-  loans      Loan[]
-  appointments Appointment[]
-  supportTickets SupportTicket[]
+  user                User                 @relation(fields: [userId], references: [id])
+  branch              Branch?              @relation(fields: [branchId], references: [id])
+  addresses           Address[]
+  kycRecords          KycRecord[]
+  documents           Document[]
+  loanApplications    LoanApplication[]
+  loans               Loan[]
+  appointments        Appointment[]
+  supportTickets      SupportTicket[]
   paymentTransactions PaymentTransaction[]
+  collectionCases     CollectionCase[]
 
   @@index([mobile])
   @@map("customers")
@@ -368,25 +373,27 @@ model Address {
 
   customer Customer @relation(fields: [customerId], references: [id])
 
+  @@index([customerId])
   @@map("addresses")
 }
 
 model KycRecord {
-  id            String    @id @default(uuid()) @db.Uuid
-  customerId    String    @map("customer_id") @db.Uuid
-  docType       String    @map("doc_type") // PAN | AADHAAR | ADDRESS_PROOF | OTHER
-  maskedNumber  String    @map("masked_number") // store masked value only, e.g. XXXX-XXXX-1234
-  encryptedRef  String?   @map("encrypted_ref") // pointer to encrypted vault entry, not raw value
-  status        KycStatus @default(PENDING)
-  verifiedBy    String?   @map("verified_by") @db.Uuid
-  verifiedAt    DateTime? @map("verified_at")
-  rejectionReason String? @map("rejection_reason")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id              String    @id @default(uuid()) @db.Uuid
+  customerId      String    @map("customer_id") @db.Uuid
+  docType         String    @map("doc_type") // PAN | AADHAAR | ADDRESS_PROOF | OTHER
+  maskedNumber    String    @map("masked_number") // store masked value only, e.g. XXXX-XXXX-1234
+  encryptedRef    String?   @map("encrypted_ref") // pointer to encrypted vault entry, not raw value
+  status          KycStatus @default(PENDING)
+  verifiedBy      String?   @map("verified_by") @db.Uuid
+  verifiedAt      DateTime? @map("verified_at")
+  rejectionReason String?   @map("rejection_reason")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
 
   customer  Customer   @relation(fields: [customerId], references: [id])
   documents Document[]
 
+  @@index([customerId])
   @@map("kyc_records")
 }
 
@@ -409,22 +416,22 @@ enum DocumentCategory {
 }
 
 model Document {
-  id           String   @id @default(uuid()) @db.Uuid
-  category     DocumentCategory
-  ownerType    String   @map("owner_type") // CUSTOMER | LOAN | COLLATERAL | KYC | AUCTION | BRANCH
-  ownerId      String   @map("owner_id") @db.Uuid
-  customerId   String?  @map("customer_id") @db.Uuid
-  kycRecordId  String?  @map("kyc_record_id") @db.Uuid
-  storageKey   String   @map("storage_key") // S3 object key — never a public URL
-  mimeType     String   @map("mime_type")
-  sizeBytes    Int      @map("size_bytes")
-  version      Int      @default(1)
-  checksum     String?
-  isEncrypted  Boolean  @default(true) @map("is_encrypted")
-  expiresAt    DateTime? @map("expires_at")
-  uploadedBy   String?  @map("uploaded_by") @db.Uuid
-  createdAt    DateTime @default(now()) @map("created_at")
-  deletedAt    DateTime? @map("deleted_at")
+  id          String           @id @default(uuid()) @db.Uuid
+  category    DocumentCategory
+  ownerType   String           @map("owner_type") // CUSTOMER | LOAN | COLLATERAL | KYC | AUCTION | BRANCH
+  ownerId     String           @map("owner_id") @db.Uuid
+  customerId  String?          @map("customer_id") @db.Uuid
+  kycRecordId String?          @map("kyc_record_id") @db.Uuid
+  storageKey  String           @map("storage_key") // S3 object key — never a public URL
+  mimeType    String           @map("mime_type")
+  sizeBytes   Int              @map("size_bytes")
+  version     Int              @default(1)
+  checksum    String?
+  isEncrypted Boolean          @default(true) @map("is_encrypted")
+  expiresAt   DateTime?        @map("expires_at")
+  uploadedBy  String?          @map("uploaded_by") @db.Uuid
+  createdAt   DateTime         @default(now()) @map("created_at")
+  deletedAt   DateTime?        @map("deleted_at")
 
   customer  Customer?  @relation(fields: [customerId], references: [id])
   kycRecord KycRecord? @relation(fields: [kycRecordId], references: [id])
@@ -444,22 +451,22 @@ enum ProductType {
 
 // Regulatory/commercial parameters live here — NEVER hard-coded in application logic.
 model LoanProduct {
-  id                  String   @id @default(uuid()) @db.Uuid
-  code                String   @unique
-  name                String
-  type                ProductType
-  maxLtvPercent       Decimal  @map("max_ltv_percent") @db.Decimal(5, 2)
-  minLoanAmount       Decimal  @map("min_loan_amount") @db.Decimal(18, 2)
-  maxLoanAmount       Decimal  @map("max_loan_amount") @db.Decimal(18, 2)
-  minTenureDays       Int      @map("min_tenure_days")
-  maxTenureDays       Int      @map("max_tenure_days")
-  gracePeriodDays     Int      @default(0) @map("grace_period_days")
-  isActive            Boolean  @default(true) @map("is_active")
-  effectiveFrom       DateTime @default(now()) @map("effective_from")
-  effectiveTo         DateTime? @map("effective_to")
-  createdBy           String?  @map("created_by") @db.Uuid
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
+  id              String      @id @default(uuid()) @db.Uuid
+  code            String      @unique
+  name            String
+  type            ProductType
+  maxLtvPercent   Decimal     @map("max_ltv_percent") @db.Decimal(5, 2)
+  minLoanAmount   Decimal     @map("min_loan_amount") @db.Decimal(18, 2)
+  maxLoanAmount   Decimal     @map("max_loan_amount") @db.Decimal(18, 2)
+  minTenureDays   Int         @map("min_tenure_days")
+  maxTenureDays   Int         @map("max_tenure_days")
+  gracePeriodDays Int         @default(0) @map("grace_period_days")
+  isActive        Boolean     @default(true) @map("is_active")
+  effectiveFrom   DateTime    @default(now()) @map("effective_from")
+  effectiveTo     DateTime?   @map("effective_to")
+  createdBy       String?     @map("created_by") @db.Uuid
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
 
   branchProducts   BranchProduct[]
   loanApplications LoanApplication[]
@@ -490,23 +497,28 @@ enum LoanStatus {
 }
 
 model LoanApplication {
-  id               String     @id @default(uuid()) @db.Uuid
-  applicationNumber String    @unique @map("application_number")
-  customerId       String     @map("customer_id") @db.Uuid
-  branchId         String     @map("branch_id") @db.Uuid
-  productId        String     @map("product_id") @db.Uuid
-  requestedAmount  Decimal    @map("requested_amount") @db.Decimal(18, 2)
-  requestedTenureDays Int     @map("requested_tenure_days")
-  purpose          String?
-  status           LoanStatus @default(SUBMITTED)
-  submittedAt      DateTime   @default(now()) @map("submitted_at")
-  createdAt        DateTime   @default(now()) @map("created_at")
-  updatedAt        DateTime   @updatedAt @map("updated_at")
+  id                  String     @id @default(uuid()) @db.Uuid
+  applicationNumber   String     @unique @map("application_number")
+  customerId          String     @map("customer_id") @db.Uuid
+  branchId            String     @map("branch_id") @db.Uuid
+  productId           String     @map("product_id") @db.Uuid
+  requestedAmount     Decimal    @map("requested_amount") @db.Decimal(18, 2)
+  requestedTenureDays Int        @map("requested_tenure_days")
+  purpose             String?
+  // Null when the customer self-applies; set when a loan officer creates the
+  // application on the customer's behalf. This is what lets loan approval
+  // block self-approval (spec #13/#75/#147: "Loan Officer cannot approve own
+  // loan") — without it there's no way to know which employee to exclude.
+  createdByEmployeeId String?    @map("created_by_employee_id") @db.Uuid
+  status              LoanStatus @default(SUBMITTED)
+  submittedAt         DateTime   @default(now()) @map("submitted_at")
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
 
-  customer Customer    @relation(fields: [customerId], references: [id])
-  branch   Branch      @relation(fields: [branchId], references: [id])
-  product  LoanProduct @relation(fields: [productId], references: [id])
-  loan     Loan?
+  customer      Customer            @relation(fields: [customerId], references: [id])
+  branch        Branch              @relation(fields: [branchId], references: [id])
+  product       LoanProduct         @relation(fields: [productId], references: [id])
+  loan          Loan?
   statusHistory LoanStatusHistory[]
   appointments  Appointment[]
 
@@ -540,38 +552,39 @@ model Appointment {
 // ----------------------------------------------------------------------------
 
 model Loan {
-  id                  String     @id @default(uuid()) @db.Uuid
-  loanNumber          String     @unique @map("loan_number") // GL-BLR-2026-000001
-  applicationId       String     @unique @map("application_id") @db.Uuid
-  customerId          String     @map("customer_id") @db.Uuid
-  branchId            String     @map("branch_id") @db.Uuid
-  productId           String     @map("product_id") @db.Uuid
-  principalAmount     Decimal    @map("principal_amount") @db.Decimal(18, 2)
-  approvedLtvPercent  Decimal    @map("approved_ltv_percent") @db.Decimal(5, 2)
-  interestRateSnapshot Decimal   @map("interest_rate_snapshot") @db.Decimal(7, 4)
-  tenureDays          Int        @map("tenure_days")
-  status              LoanStatus @default(APPROVED)
-  disbursedAt         DateTime?  @map("disbursed_at")
-  startDate           DateTime?  @map("start_date") @db.Date
-  maturityDate        DateTime?  @map("maturity_date") @db.Date
-  closedAt            DateTime?  @map("closed_at")
-  createdAt           DateTime   @default(now()) @map("created_at")
-  updatedAt           DateTime   @updatedAt @map("updated_at")
+  id                   String     @id @default(uuid()) @db.Uuid
+  loanNumber           String     @unique @map("loan_number") // GL-BLR-2026-000001
+  applicationId        String     @unique @map("application_id") @db.Uuid
+  customerId           String     @map("customer_id") @db.Uuid
+  branchId             String     @map("branch_id") @db.Uuid
+  productId            String     @map("product_id") @db.Uuid
+  principalAmount      Decimal    @map("principal_amount") @db.Decimal(18, 2)
+  approvedLtvPercent   Decimal    @map("approved_ltv_percent") @db.Decimal(5, 2)
+  interestRateSnapshot Decimal    @map("interest_rate_snapshot") @db.Decimal(7, 4)
+  tenureDays           Int        @map("tenure_days")
+  status               LoanStatus @default(APPROVED)
+  disbursedAt          DateTime?  @map("disbursed_at")
+  startDate            DateTime?  @map("start_date") @db.Date
+  maturityDate         DateTime?  @map("maturity_date") @db.Date
+  closedAt             DateTime?  @map("closed_at")
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
 
   application LoanApplication @relation(fields: [applicationId], references: [id])
   customer    Customer        @relation(fields: [customerId], references: [id])
   branch      Branch          @relation(fields: [branchId], references: [id])
   product     LoanProduct     @relation(fields: [productId], references: [id])
 
-  statusHistory     LoanStatusHistory[]
-  approvals         LoanApproval[]
-  collaterals       Collateral[]
-  interestAccruals  InterestAccrual[]
-  loanCharges       LoanCharge[]
+  statusHistory         LoanStatusHistory[]
+  approvals             LoanApproval[]
+  collaterals           Collateral[]
+  interestAccruals      InterestAccrual[]
+  loanCharges           LoanCharge[]
   financialTransactions FinancialTransaction[]
   paymentTransactions   PaymentTransaction[]
-  receipts          Receipt[]
-  auctions          Auction[]
+  receipts              Receipt[]
+  collectionCases       CollectionCase[]
+  auctions              Auction[]
 
   @@index([customerId])
   @@index([branchId])
@@ -593,23 +606,26 @@ model LoanStatusHistory {
   loan        Loan?            @relation(fields: [loanId], references: [id])
   application LoanApplication? @relation(fields: [applicationId], references: [id])
 
+  @@index([loanId])
+  @@index([applicationId])
   @@map("loan_status_history")
 }
 
 // Maker-checker approval trail for loan approval (spec #30, #35).
 model LoanApproval {
-  id             String   @id @default(uuid()) @db.Uuid
-  loanId         String   @map("loan_id") @db.Uuid
-  approvalLevel  Int      @map("approval_level")
-  approverEmployeeId String @map("approver_employee_id") @db.Uuid
-  decision       String   // APPROVED | REJECTED | REFERRED
-  approvedAmount Decimal? @map("approved_amount") @db.Decimal(18, 2)
-  remarks        String?
-  decidedAt      DateTime @default(now()) @map("decided_at")
+  id                 String   @id @default(uuid()) @db.Uuid
+  loanId             String   @map("loan_id") @db.Uuid
+  approvalLevel      Int      @map("approval_level")
+  approverEmployeeId String   @map("approver_employee_id") @db.Uuid
+  decision           String // APPROVED | REJECTED | REFERRED
+  approvedAmount     Decimal? @map("approved_amount") @db.Decimal(18, 2)
+  remarks            String?
+  decidedAt          DateTime @default(now()) @map("decided_at")
 
   loan     Loan     @relation(fields: [loanId], references: [id])
   approver Employee @relation(fields: [approverEmployeeId], references: [id])
 
+  @@index([loanId])
   @@map("loan_approvals")
 }
 
@@ -663,7 +679,7 @@ model InterestAccrual {
 model Charge {
   id            String   @id @default(uuid()) @db.Uuid
   productId     String   @map("product_id") @db.Uuid
-  code          String   // PROCESSING_FEE | PENAL_CHARGE | VALUATION_FEE | ...
+  code          String // PROCESSING_FEE | PENAL_CHARGE | VALUATION_FEE | ...
   name          String
   calcType      String   @map("calc_type") // FLAT | PERCENT_OF_PRINCIPAL
   amount        Decimal  @db.Decimal(18, 2)
@@ -677,18 +693,19 @@ model Charge {
 }
 
 model LoanCharge {
-  id         String   @id @default(uuid()) @db.Uuid
-  loanId     String   @map("loan_id") @db.Uuid
-  chargeId   String   @map("charge_id") @db.Uuid
-  amount     Decimal  @db.Decimal(18, 2)
-  waived     Boolean  @default(false)
-  waivedBy   String?  @map("waived_by") @db.Uuid
-  waivedReason String? @map("waived_reason")
-  appliedAt  DateTime @default(now()) @map("applied_at")
+  id           String   @id @default(uuid()) @db.Uuid
+  loanId       String   @map("loan_id") @db.Uuid
+  chargeId     String   @map("charge_id") @db.Uuid
+  amount       Decimal  @db.Decimal(18, 2)
+  waived       Boolean  @default(false)
+  waivedBy     String?  @map("waived_by") @db.Uuid
+  waivedReason String?  @map("waived_reason")
+  appliedAt    DateTime @default(now()) @map("applied_at")
 
   loan   Loan   @relation(fields: [loanId], references: [id])
   charge Charge @relation(fields: [chargeId], references: [id])
 
+  @@index([loanId])
   @@map("loan_charges")
 }
 
@@ -705,15 +722,15 @@ enum PaymentStatus {
 }
 
 model Payment {
-  id            String        @id @default(uuid()) @db.Uuid
-  paymentNumber String        @unique @map("payment_number") // PAY-2026-000001
-  loanId        String?       @map("loan_id") @db.Uuid
-  customerId    String        @map("customer_id") @db.Uuid
-  amount        Decimal       @db.Decimal(18, 2)
-  mode          String        // UPI | NETBANKING | CARD | OTHER
-  status        PaymentStatus @default(INITIATED)
-  idempotencyKey String       @unique @map("idempotency_key")
-  createdAt     DateTime      @default(now()) @map("created_at")
+  id             String        @id @default(uuid()) @db.Uuid
+  paymentNumber  String        @unique @map("payment_number") // PAY-2026-000001
+  loanId         String?       @map("loan_id") @db.Uuid
+  customerId     String        @map("customer_id") @db.Uuid
+  amount         Decimal       @db.Decimal(18, 2)
+  mode           String // UPI | NETBANKING | CARD | OTHER
+  status         PaymentStatus @default(INITIATED)
+  idempotencyKey String        @unique @map("idempotency_key")
+  createdAt      DateTime      @default(now()) @map("created_at")
 
   transactions PaymentTransaction[]
 
@@ -722,21 +739,21 @@ model Payment {
 
 // Gateway-side transaction + webhook verification record.
 model PaymentTransaction {
-  id              String        @id @default(uuid()) @db.Uuid
-  paymentId       String        @map("payment_id") @db.Uuid
-  loanId          String?       @map("loan_id") @db.Uuid
-  customerId      String        @map("customer_id") @db.Uuid
-  gateway         String        // e.g. RAZORPAY, CASHFREE
-  gatewayOrderId  String?       @map("gateway_order_id")
-  gatewayPaymentId String?      @map("gateway_payment_id")
-  gatewaySignatureVerified Boolean @default(false) @map("gateway_signature_verified")
-  status          PaymentStatus @default(PENDING)
-  rawWebhookPayload Json?       @map("raw_webhook_payload")
-  verifiedAt      DateTime?     @map("verified_at")
-  createdAt       DateTime      @default(now()) @map("created_at")
+  id                       String        @id @default(uuid()) @db.Uuid
+  paymentId                String        @map("payment_id") @db.Uuid
+  loanId                   String?       @map("loan_id") @db.Uuid
+  customerId               String        @map("customer_id") @db.Uuid
+  gateway                  String // e.g. RAZORPAY, CASHFREE
+  gatewayOrderId           String?       @map("gateway_order_id")
+  gatewayPaymentId         String?       @map("gateway_payment_id")
+  gatewaySignatureVerified Boolean       @default(false) @map("gateway_signature_verified")
+  status                   PaymentStatus @default(PENDING)
+  rawWebhookPayload        Json?         @map("raw_webhook_payload")
+  verifiedAt               DateTime?     @map("verified_at")
+  createdAt                DateTime      @default(now()) @map("created_at")
 
-  payment  Payment @relation(fields: [paymentId], references: [id])
-  loan     Loan?   @relation(fields: [loanId], references: [id])
+  payment  Payment  @relation(fields: [paymentId], references: [id])
+  loan     Loan?    @relation(fields: [loanId], references: [id])
   customer Customer @relation(fields: [customerId], references: [id])
   receipt  Receipt?
 
@@ -760,22 +777,22 @@ enum LedgerTransactionType {
 // Immutable financial ledger — the single source of truth for every money movement.
 // Never updated, never deleted. Corrections are new ADJUSTMENT transactions.
 model FinancialTransaction {
-  id             String                @id @default(uuid()) @db.Uuid
-  loanId         String                @map("loan_id") @db.Uuid
-  customerId     String                @map("customer_id") @db.Uuid
-  branchId       String                @map("branch_id") @db.Uuid
-  type           LedgerTransactionType
-  amount         Decimal               @db.Decimal(18, 2)
-  debitAccount   String                @map("debit_account")
-  creditAccount  String                @map("credit_account")
-  reference      String?
-  idempotencyKey String                @unique @map("idempotency_key")
-  reversesTransactionId String?        @map("reverses_transaction_id") @db.Uuid
-  createdBy      String?               @map("created_by") @db.Uuid
-  approvedBy     String?               @map("approved_by") @db.Uuid
-  createdAt      DateTime              @default(now()) @map("created_at")
+  id                    String                @id @default(uuid()) @db.Uuid
+  loanId                String                @map("loan_id") @db.Uuid
+  customerId            String                @map("customer_id") @db.Uuid
+  branchId              String                @map("branch_id") @db.Uuid
+  type                  LedgerTransactionType
+  amount                Decimal               @db.Decimal(18, 2)
+  debitAccount          String                @map("debit_account")
+  creditAccount         String                @map("credit_account")
+  reference             String?
+  idempotencyKey        String                @unique @map("idempotency_key")
+  reversesTransactionId String?               @map("reverses_transaction_id") @db.Uuid
+  createdBy             String?               @map("created_by") @db.Uuid
+  approvedBy            String?               @map("approved_by") @db.Uuid
+  createdAt             DateTime              @default(now()) @map("created_at")
 
-  loan    Loan   @relation(fields: [loanId], references: [id])
+  loan    Loan          @relation(fields: [loanId], references: [id])
   entries LedgerEntry[]
 
   @@index([loanId])
@@ -784,33 +801,36 @@ model FinancialTransaction {
 }
 
 model LedgerEntry {
-  id             String   @id @default(uuid()) @db.Uuid
-  transactionId  String   @map("transaction_id") @db.Uuid
-  account        String
-  debit          Decimal  @default(0) @db.Decimal(18, 2)
-  credit         Decimal  @default(0) @db.Decimal(18, 2)
-  createdAt      DateTime @default(now()) @map("created_at")
+  id            String   @id @default(uuid()) @db.Uuid
+  transactionId String   @map("transaction_id") @db.Uuid
+  account       String
+  debit         Decimal  @default(0) @db.Decimal(18, 2)
+  credit        Decimal  @default(0) @db.Decimal(18, 2)
+  createdAt     DateTime @default(now()) @map("created_at")
 
   transaction FinancialTransaction @relation(fields: [transactionId], references: [id])
 
+  @@index([transactionId])
+  @@index([account])
   @@map("ledger_entries")
 }
 
 model Receipt {
-  id             String   @id @default(uuid()) @db.Uuid
-  receiptNumber  String   @unique @map("receipt_number")
-  loanId         String   @map("loan_id") @db.Uuid
-  paymentTransactionId String @unique @map("payment_transaction_id") @db.Uuid
-  principalComponent Decimal @map("principal_component") @db.Decimal(18, 2)
-  interestComponent  Decimal @map("interest_component") @db.Decimal(18, 2)
-  chargesComponent   Decimal @default(0) @map("charges_component") @db.Decimal(18, 2)
-  totalAmount        Decimal @map("total_amount") @db.Decimal(18, 2)
-  documentKey    String?  @map("document_key")
-  createdAt      DateTime @default(now()) @map("created_at")
+  id                   String   @id @default(uuid()) @db.Uuid
+  receiptNumber        String   @unique @map("receipt_number")
+  loanId               String   @map("loan_id") @db.Uuid
+  paymentTransactionId String   @unique @map("payment_transaction_id") @db.Uuid
+  principalComponent   Decimal  @map("principal_component") @db.Decimal(18, 2)
+  interestComponent    Decimal  @map("interest_component") @db.Decimal(18, 2)
+  chargesComponent     Decimal  @default(0) @map("charges_component") @db.Decimal(18, 2)
+  totalAmount          Decimal  @map("total_amount") @db.Decimal(18, 2)
+  documentKey          String?  @map("document_key")
+  createdAt            DateTime @default(now()) @map("created_at")
 
-  loan               Loan                @relation(fields: [loanId], references: [id])
-  paymentTransaction PaymentTransaction  @relation(fields: [paymentTransactionId], references: [id])
+  loan               Loan               @relation(fields: [loanId], references: [id])
+  paymentTransaction PaymentTransaction @relation(fields: [paymentTransactionId], references: [id])
 
+  @@index([loanId])
   @@map("receipts")
 }
 
@@ -828,88 +848,100 @@ enum CollateralStatus {
 }
 
 model Collateral {
-  id             String           @id @default(uuid()) @db.Uuid
-  collateralCode String           @unique @map("collateral_code") // COL-2026-000001
-  loanId         String           @map("loan_id") @db.Uuid
-  customerId     String           @map("customer_id") @db.Uuid
-  branchId       String           @map("branch_id") @db.Uuid
-  status         CollateralStatus @default(PENDING_APPRAISAL)
-  totalGrossWeight Decimal?       @map("total_gross_weight") @db.Decimal(10, 3)
-  totalNetWeight   Decimal?       @map("total_net_weight") @db.Decimal(10, 3)
-  totalEligibleValue Decimal?     @map("total_eligible_value") @db.Decimal(18, 2)
-  insuranceRef   String?          @map("insurance_ref")
-  releasedAt     DateTime?        @map("released_at")
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
+  id                 String           @id @default(uuid()) @db.Uuid
+  collateralCode     String           @unique @map("collateral_code") // COL-2026-000001
+  loanId             String           @map("loan_id") @db.Uuid
+  customerId         String           @map("customer_id") @db.Uuid
+  branchId           String           @map("branch_id") @db.Uuid
+  status             CollateralStatus @default(PENDING_APPRAISAL)
+  totalGrossWeight   Decimal?         @map("total_gross_weight") @db.Decimal(10, 3)
+  totalNetWeight     Decimal?         @map("total_net_weight") @db.Decimal(10, 3)
+  totalEligibleValue Decimal?         @map("total_eligible_value") @db.Decimal(18, 2)
+  insuranceRef       String?          @map("insurance_ref")
+  releasedAt         DateTime?        @map("released_at")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
 
-  loan  Loan @relation(fields: [loanId], references: [id])
-  items CollateralItem[]
+  loan       Loan                 @relation(fields: [loanId], references: [id])
+  items      CollateralItem[]
   appraisals Appraisal[]
   movements  CollateralMovement[]
   packets    Packet[]
 
+  @@index([loanId])
+  @@index([customerId])
+  @@index([branchId])
   @@map("collaterals")
 }
 
 model CollateralItem {
-  id            String   @id @default(uuid()) @db.Uuid
-  collateralId  String   @map("collateral_id") @db.Uuid
-  itemType      String   @map("item_type") // e.g. NECKLACE, RING, BANGLE
-  description   String?
-  grossWeight   Decimal  @map("gross_weight") @db.Decimal(10, 3)
-  stoneWeight   Decimal  @default(0) @map("stone_weight") @db.Decimal(10, 3)
-  netWeight     Decimal  @map("net_weight") @db.Decimal(10, 3)
-  purityKarat   Decimal  @map("purity_karat") @db.Decimal(5, 2)
-  photoKeys     Json?    @map("photo_keys")
-  createdAt     DateTime @default(now()) @map("created_at")
+  id           String    @id @default(uuid()) @db.Uuid
+  collateralId String    @map("collateral_id") @db.Uuid
+  itemType     String    @map("item_type") // e.g. NECKLACE, RING, BANGLE
+  description  String?
+  grossWeight  Decimal   @map("gross_weight") @db.Decimal(10, 3)
+  stoneWeight  Decimal   @default(0) @map("stone_weight") @db.Decimal(10, 3)
+  netWeight    Decimal   @map("net_weight") @db.Decimal(10, 3)
+  purityKarat  Decimal   @map("purity_karat") @db.Decimal(5, 2)
+  photoKeys    Json?     @map("photo_keys")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  // Set when this item alone is handed back to the customer while the loan
+  // stays open (part-release). The whole-collateral release on closure uses
+  // Collateral.releasedAt instead.
+  releasedAt   DateTime? @map("released_at")
+  releasedBy   String?   @map("released_by") @db.Uuid
 
-  collateral      Collateral @relation(fields: [collateralId], references: [id])
-  appraisalItems  AppraisalItem[]
+  collateral     Collateral      @relation(fields: [collateralId], references: [id])
+  appraisalItems AppraisalItem[]
 
+  @@index([collateralId])
   @@map("collateral_items")
 }
 
 model Appraisal {
-  id              String   @id @default(uuid()) @db.Uuid
-  collateralId    String   @map("collateral_id") @db.Uuid
-  appraiserEmployeeId String @map("appraiser_employee_id") @db.Uuid
-  goldRatePerGram Decimal  @map("gold_rate_per_gram") @db.Decimal(10, 2)
-  totalValuation  Decimal  @map("total_valuation") @db.Decimal(18, 2)
-  appliedLtvPercent Decimal @map("applied_ltv_percent") @db.Decimal(5, 2)
-  eligibleLoanValue Decimal @map("eligible_loan_value") @db.Decimal(18, 2)
-  remarks         String?
-  requiresCheckerApproval Boolean @default(true) @map("requires_checker_approval")
-  checkedBy       String?  @map("checked_by") @db.Uuid
-  checkedAt       DateTime? @map("checked_at")
-  status          String   @default("PENDING_CHECK") // PENDING_CHECK | APPROVED | REJECTED
-  createdAt       DateTime @default(now()) @map("created_at")
+  id                      String    @id @default(uuid()) @db.Uuid
+  collateralId            String    @map("collateral_id") @db.Uuid
+  appraiserEmployeeId     String    @map("appraiser_employee_id") @db.Uuid
+  goldRatePerGram         Decimal   @map("gold_rate_per_gram") @db.Decimal(10, 2)
+  totalValuation          Decimal   @map("total_valuation") @db.Decimal(18, 2)
+  appliedLtvPercent       Decimal   @map("applied_ltv_percent") @db.Decimal(5, 2)
+  eligibleLoanValue       Decimal   @map("eligible_loan_value") @db.Decimal(18, 2)
+  remarks                 String?
+  requiresCheckerApproval Boolean   @default(true) @map("requires_checker_approval")
+  checkedBy               String?   @map("checked_by") @db.Uuid
+  checkedAt               DateTime? @map("checked_at")
+  status                  String    @default("PENDING_CHECK") // PENDING_CHECK | APPROVED | REJECTED
+  createdAt               DateTime  @default(now()) @map("created_at")
 
-  collateral Collateral @relation(fields: [collateralId], references: [id])
-  appraiser  Employee   @relation(fields: [appraiserEmployeeId], references: [id])
+  collateral Collateral      @relation(fields: [collateralId], references: [id])
+  appraiser  Employee        @relation(fields: [appraiserEmployeeId], references: [id])
   items      AppraisalItem[]
 
+  @@index([collateralId])
   @@map("appraisals")
 }
 
 model AppraisalItem {
-  id             String  @id @default(uuid()) @db.Uuid
-  appraisalId    String  @map("appraisal_id") @db.Uuid
-  collateralItemId String @map("collateral_item_id") @db.Uuid
-  netGoldWeight  Decimal @map("net_gold_weight") @db.Decimal(10, 3)
-  purityKarat    Decimal @map("purity_karat") @db.Decimal(5, 2)
-  valuation      Decimal @db.Decimal(18, 2)
+  id               String  @id @default(uuid()) @db.Uuid
+  appraisalId      String  @map("appraisal_id") @db.Uuid
+  collateralItemId String  @map("collateral_item_id") @db.Uuid
+  netGoldWeight    Decimal @map("net_gold_weight") @db.Decimal(10, 3)
+  purityKarat      Decimal @map("purity_karat") @db.Decimal(5, 2)
+  valuation        Decimal @db.Decimal(18, 2)
 
   appraisal      Appraisal      @relation(fields: [appraisalId], references: [id])
   collateralItem CollateralItem @relation(fields: [collateralItemId], references: [id])
 
+  @@index([appraisalId])
+  @@index([collateralItemId])
   @@map("appraisal_items")
 }
 
 model Vault {
-  id         String   @id @default(uuid()) @db.Uuid
-  branchId   String   @map("branch_id") @db.Uuid
-  name       String
-  createdAt  DateTime @default(now()) @map("created_at")
+  id        String   @id @default(uuid()) @db.Uuid
+  branchId  String   @map("branch_id") @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
 
   branch    Branch          @relation(fields: [branchId], references: [id])
   locations VaultLocation[]
@@ -920,12 +952,12 @@ model Vault {
 model VaultLocation {
   id       String  @id @default(uuid()) @db.Uuid
   vaultId  String  @map("vault_id") @db.Uuid
-  type     String  // LOCKER | SHELF | BIN
+  type     String // LOCKER | SHELF | BIN
   code     String
   parentId String? @map("parent_id") @db.Uuid
 
-  vault   Vault           @relation(fields: [vaultId], references: [id])
-  parent  VaultLocation?  @relation("VaultLocationHierarchy", fields: [parentId], references: [id])
+  vault    Vault           @relation(fields: [vaultId], references: [id])
+  parent   VaultLocation?  @relation("VaultLocationHierarchy", fields: [parentId], references: [id])
   children VaultLocation[] @relation("VaultLocationHierarchy")
   packets  Packet[]
 
@@ -944,37 +976,38 @@ enum PacketStatus {
 }
 
 model Packet {
-  id             String       @id @default(uuid()) @db.Uuid
-  packetNumber   String       @unique @map("packet_number") // PKT-BLR-2026-000001
-  collateralId   String       @map("collateral_id") @db.Uuid
-  vaultLocationId String?     @map("vault_location_id") @db.Uuid
-  sealNumber     String       @map("seal_number")
-  qrCode         String?      @map("qr_code")
-  status         PacketStatus @default(RECEIVED)
-  createdAt      DateTime     @default(now()) @map("created_at")
+  id              String       @id @default(uuid()) @db.Uuid
+  packetNumber    String       @unique @map("packet_number") // PKT-BLR-2026-000001
+  collateralId    String       @map("collateral_id") @db.Uuid
+  vaultLocationId String?      @map("vault_location_id") @db.Uuid
+  sealNumber      String       @map("seal_number")
+  qrCode          String?      @map("qr_code")
+  status          PacketStatus @default(RECEIVED)
+  createdAt       DateTime     @default(now()) @map("created_at")
 
-  collateral   Collateral      @relation(fields: [collateralId], references: [id])
-  vaultLocation VaultLocation? @relation(fields: [vaultLocationId], references: [id])
-  movements    CollateralMovement[]
+  collateral    Collateral           @relation(fields: [collateralId], references: [id])
+  vaultLocation VaultLocation?       @relation(fields: [vaultLocationId], references: [id])
+  movements     CollateralMovement[]
 
   @@map("packets")
 }
 
 model CollateralMovement {
-  id            String   @id @default(uuid()) @db.Uuid
-  collateralId  String   @map("collateral_id") @db.Uuid
-  packetId      String?  @map("packet_id") @db.Uuid
-  employeeId    String   @map("employee_id") @db.Uuid
-  fromLocation  String?  @map("from_location")
-  toLocation    String?  @map("to_location")
-  reason        String
-  authorizedBy  String?  @map("authorized_by") @db.Uuid
-  occurredAt    DateTime @default(now()) @map("occurred_at")
+  id           String   @id @default(uuid()) @db.Uuid
+  collateralId String   @map("collateral_id") @db.Uuid
+  packetId     String?  @map("packet_id") @db.Uuid
+  employeeId   String   @map("employee_id") @db.Uuid
+  fromLocation String?  @map("from_location")
+  toLocation   String?  @map("to_location")
+  reason       String
+  authorizedBy String?  @map("authorized_by") @db.Uuid
+  occurredAt   DateTime @default(now()) @map("occurred_at")
 
   collateral Collateral @relation(fields: [collateralId], references: [id])
   packet     Packet?    @relation(fields: [packetId], references: [id])
   employee   Employee   @relation(fields: [employeeId], references: [id])
 
+  @@index([collateralId])
   @@map("collateral_movements")
 }
 
@@ -995,32 +1028,62 @@ enum AuctionStatus {
 }
 
 model Auction {
-  id            String        @id @default(uuid()) @db.Uuid
-  auctionNumber String        @unique @map("auction_number") // AUC-2026-000001
-  loanId        String        @map("loan_id") @db.Uuid
-  status        AuctionStatus @default(CANDIDATE)
-  noticePeriodDays Int?       @map("notice_period_days")
-  scheduledDate DateTime?     @map("scheduled_date")
-  reservePrice  Decimal?      @map("reserve_price") @db.Decimal(18, 2)
-  salePrice     Decimal?      @map("sale_price") @db.Decimal(18, 2)
-  surplusAmount Decimal?      @map("surplus_amount") @db.Decimal(18, 2)
-  approvedBy    String?       @map("approved_by") @db.Uuid
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
+  id               String        @id @default(uuid()) @db.Uuid
+  auctionNumber    String        @unique @map("auction_number") // AUC-2026-000001
+  loanId           String        @map("loan_id") @db.Uuid
+  status           AuctionStatus @default(CANDIDATE)
+  noticePeriodDays Int?          @map("notice_period_days")
+  scheduledDate    DateTime?     @map("scheduled_date")
+  reservePrice     Decimal?      @map("reserve_price") @db.Decimal(18, 2)
+  salePrice        Decimal?      @map("sale_price") @db.Decimal(18, 2)
+  surplusAmount    Decimal?      @map("surplus_amount") @db.Decimal(18, 2)
+  approvedBy       String?       @map("approved_by") @db.Uuid
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
 
-  loan     Loan            @relation(fields: [loanId], references: [id])
-  notices  AuctionNotice[]
-  bids     AuctionBid[]
+  // ---- workflow record (who did what, when, and on what numbers) ------------------------------
+  createdBy             String?   @map("created_by") @db.Uuid
+  daysPastDueAtCreation Int?      @map("days_past_due_at_creation")
+  // Valuation at review: the current market rate the preparer entered, the market value of the pledged
+  // gold it implies, and the reserve-price percentage that was in force — so the reserve price can always
+  // be re-derived and defended later, even after the configured percentage changes.
+  preparedBy            String?   @map("prepared_by") @db.Uuid
+  goldRatePerGram       Decimal?  @map("gold_rate_per_gram") @db.Decimal(18, 2)
+  marketValue           Decimal?  @map("market_value") @db.Decimal(18, 2)
+  reservePricePercent   Decimal?  @map("reserve_price_percent") @db.Decimal(5, 2)
+  noticeSentAt          DateTime? @map("notice_sent_at")
+  noticePeriodEndsAt    DateTime? @map("notice_period_ends_at")
+  approvedAt            DateTime? @map("approved_at")
+  venue                 String?
+  // Sale
+  saleRecordedBy        String?   @map("sale_recorded_by") @db.Uuid
+  completedAt           DateTime? @map("completed_at")
+  buyerName             String?   @map("buyer_name")
+  // How the sale price was applied: interest / charges / principal recovered, any shortfall left owing,
+  // and the surplus owed back to the borrower.
+  saleBreakdown         Json?     @map("sale_breakdown")
+  // Settlement (surplus paid back to the borrower)
+  settledBy             String?   @map("settled_by") @db.Uuid
+  settledAt             DateTime? @map("settled_at")
+  cancelledBy           String?   @map("cancelled_by") @db.Uuid
+  cancelledAt           DateTime? @map("cancelled_at")
+  cancelReason          String?   @map("cancel_reason")
 
+  loan    Loan            @relation(fields: [loanId], references: [id])
+  notices AuctionNotice[]
+  bids    AuctionBid[]
+
+  @@index([loanId])
+  @@index([status])
   @@map("auctions")
 }
 
 model AuctionNotice {
-  id         String   @id @default(uuid()) @db.Uuid
-  auctionId  String   @map("auction_id") @db.Uuid
-  channel    String   // SMS | EMAIL | POST | PUSH
-  sentAt     DateTime @default(now()) @map("sent_at")
-  documentKey String? @map("document_key")
+  id          String   @id @default(uuid()) @db.Uuid
+  auctionId   String   @map("auction_id") @db.Uuid
+  channel     String // SMS | EMAIL | POST | PUSH
+  sentAt      DateTime @default(now()) @map("sent_at")
+  documentKey String?  @map("document_key")
 
   auction Auction @relation(fields: [auctionId], references: [id])
 
@@ -1047,7 +1110,7 @@ model AuctionBid {
 model CashTransaction {
   id         String   @id @default(uuid()) @db.Uuid
   branchId   String   @map("branch_id") @db.Uuid
-  type       String   // OPENING | RECEIPT | DISBURSEMENT | TRANSFER | CLOSING
+  type       String // OPENING | RECEIPT | DISBURSEMENT | TRANSFER | CLOSING
   amount     Decimal  @db.Decimal(18, 2)
   reference  String?
   approvedBy String?  @map("approved_by") @db.Uuid
@@ -1060,13 +1123,13 @@ model CashTransaction {
 }
 
 model BankTransaction {
-  id           String   @id @default(uuid()) @db.Uuid
-  bankRef      String   @map("bank_ref")
-  amount       Decimal  @db.Decimal(18, 2)
-  valueDate    DateTime @map("value_date") @db.Date
-  description  String?
-  isMatched    Boolean  @default(false) @map("is_matched")
-  importedAt   DateTime @default(now()) @map("imported_at")
+  id          String   @id @default(uuid()) @db.Uuid
+  bankRef     String   @map("bank_ref")
+  amount      Decimal  @db.Decimal(18, 2)
+  valueDate   DateTime @map("value_date") @db.Date
+  description String?
+  isMatched   Boolean  @default(false) @map("is_matched")
+  importedAt  DateTime @default(now()) @map("imported_at")
 
   reconciliations ReconciliationRecord[]
 
@@ -1074,12 +1137,12 @@ model BankTransaction {
 }
 
 model ReconciliationRecord {
-  id                String   @id @default(uuid()) @db.Uuid
-  bankTransactionId String   @map("bank_transaction_id") @db.Uuid
-  financialTransactionId String? @map("financial_transaction_id") @db.Uuid
-  matchType         String   @map("match_type") // AUTO | MANUAL
-  matchedBy         String?  @map("matched_by") @db.Uuid
-  matchedAt         DateTime @default(now()) @map("matched_at")
+  id                     String   @id @default(uuid()) @db.Uuid
+  bankTransactionId      String   @map("bank_transaction_id") @db.Uuid
+  financialTransactionId String?  @map("financial_transaction_id") @db.Uuid
+  matchType              String   @map("match_type") // AUTO | MANUAL
+  matchedBy              String?  @map("matched_by") @db.Uuid
+  matchedAt              DateTime @default(now()) @map("matched_at")
 
   bankTransaction BankTransaction @relation(fields: [bankTransactionId], references: [id])
 
@@ -1091,13 +1154,13 @@ model ReconciliationRecord {
 // ----------------------------------------------------------------------------
 
 model NotificationTemplate {
-  id        String   @id @default(uuid()) @db.Uuid
-  eventCode String   @unique @map("event_code") // LOAN_APPROVED, PAYMENT_DUE, ...
-  channel   String   // PUSH | SMS | EMAIL | WHATSAPP
-  locale    String   @default("en")
+  id        String  @id @default(uuid()) @db.Uuid
+  eventCode String  @unique @map("event_code") // LOAN_APPROVED, PAYMENT_DUE, ...
+  channel   String // PUSH | SMS | EMAIL | WHATSAPP
+  locale    String  @default("en")
   subject   String?
   body      String
-  isActive  Boolean  @default(true) @map("is_active")
+  isActive  Boolean @default(true) @map("is_active")
 
   notifications Notification[]
 
@@ -1106,14 +1169,14 @@ model NotificationTemplate {
 }
 
 model Notification {
-  id          String   @id @default(uuid()) @db.Uuid
-  templateId  String?  @map("template_id") @db.Uuid
-  recipientUserId String @map("recipient_user_id") @db.Uuid
-  channel     String
-  status      String   @default("QUEUED") // QUEUED | SENT | FAILED | READ
-  payload     Json?
-  sentAt      DateTime? @map("sent_at")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id              String    @id @default(uuid()) @db.Uuid
+  templateId      String?   @map("template_id") @db.Uuid
+  recipientUserId String    @map("recipient_user_id") @db.Uuid
+  channel         String
+  status          String    @default("QUEUED") // QUEUED | SENT | FAILED | READ
+  payload         Json?
+  sentAt          DateTime? @map("sent_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
 
   template NotificationTemplate? @relation(fields: [templateId], references: [id])
 
@@ -1126,19 +1189,19 @@ model Notification {
 // ----------------------------------------------------------------------------
 
 model SupportTicket {
-  id           String   @id @default(uuid()) @db.Uuid
-  ticketNumber String   @unique @map("ticket_number")
-  customerId   String?  @map("customer_id") @db.Uuid
-  loanId       String?  @map("loan_id") @db.Uuid
-  category     String
-  priority     String   @default("MEDIUM")
-  description  String
-  status       String   @default("OPEN") // OPEN|ASSIGNED|IN_PROGRESS|WAITING_FOR_CUSTOMER|RESOLVED|CLOSED
-  assignedTo   String?  @map("assigned_to") @db.Uuid
-  slaDueAt     DateTime? @map("sla_due_at")
-  resolutionNote String? @map("resolution_note")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id             String    @id @default(uuid()) @db.Uuid
+  ticketNumber   String    @unique @map("ticket_number")
+  customerId     String?   @map("customer_id") @db.Uuid
+  loanId         String?   @map("loan_id") @db.Uuid
+  category       String
+  priority       String    @default("MEDIUM")
+  description    String
+  status         String    @default("OPEN") // OPEN|ASSIGNED|IN_PROGRESS|WAITING_FOR_CUSTOMER|RESOLVED|CLOSED
+  assignedTo     String?   @map("assigned_to") @db.Uuid
+  slaDueAt       DateTime? @map("sla_due_at")
+  resolutionNote String?   @map("resolution_note")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   customer Customer? @relation(fields: [customerId], references: [id])
 
@@ -1146,20 +1209,42 @@ model SupportTicket {
 }
 
 // ----------------------------------------------------------------------------
+// PUBLIC WEBSITE ENQUIRIES — anonymous leads from the marketing site's
+// contact form, before the visitor is a customer (so SupportTicket, which
+// requires an existing customer/loan context, doesn't fit).
+// ----------------------------------------------------------------------------
+
+model WebsiteEnquiry {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  email       String
+  phone       String?
+  message     String
+  sourcePage  String    @map("source_page")
+  status      String    @default("NEW") // NEW|CONTACTED|CLOSED
+  contactedBy String?   @map("contacted_by") @db.Uuid
+  contactedAt DateTime? @map("contacted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([status])
+  @@map("website_enquiries")
+}
+
+// ----------------------------------------------------------------------------
 // RISK ALERTS (spec #45)
 // ----------------------------------------------------------------------------
 
 model RiskAlert {
-  id          String   @id @default(uuid()) @db.Uuid
-  ruleCode    String   @map("rule_code")
-  severity    String   @default("MEDIUM") // LOW|MEDIUM|HIGH|CRITICAL
-  subjectType String   @map("subject_type") // CUSTOMER|LOAN|EMPLOYEE|COLLATERAL
-  subjectId   String   @map("subject_id") @db.Uuid
+  id          String    @id @default(uuid()) @db.Uuid
+  ruleCode    String    @map("rule_code")
+  severity    String    @default("MEDIUM") // LOW|MEDIUM|HIGH|CRITICAL
+  subjectType String    @map("subject_type") // CUSTOMER|LOAN|EMPLOYEE|COLLATERAL
+  subjectId   String    @map("subject_id") @db.Uuid
   details     Json?
-  status      String   @default("OPEN") // OPEN|REVIEWED|DISMISSED|ESCALATED
-  reviewedBy  String?  @map("reviewed_by") @db.Uuid
+  status      String    @default("OPEN") // OPEN|REVIEWED|DISMISSED|ESCALATED
+  reviewedBy  String?   @map("reviewed_by") @db.Uuid
   reviewedAt  DateTime? @map("reviewed_at")
-  createdAt   DateTime @default(now()) @map("created_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
 
   @@index([subjectType, subjectId])
   @@map("risk_alerts")
@@ -1170,17 +1255,17 @@ model RiskAlert {
 // ----------------------------------------------------------------------------
 
 model AuditLog {
-  id           String   @id @default(uuid()) @db.Uuid
-  userId       String?  @map("user_id") @db.Uuid
-  employeeId   String?  @map("employee_id") @db.Uuid
-  action       String   // e.g. "LOAN.APPROVE", "CUSTOMER.KYC.VIEW"
-  referenceType String? @map("reference_type")
-  referenceId  String?  @map("reference_id") @db.Uuid
-  beforeValue  Json?    @map("before_value")
-  afterValue   Json?    @map("after_value")
-  ip           String?
-  device       String?
-  createdAt    DateTime @default(now()) @map("created_at")
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String?  @map("user_id") @db.Uuid
+  employeeId    String?  @map("employee_id") @db.Uuid
+  action        String // e.g. "LOAN.APPROVE", "CUSTOMER.KYC.VIEW"
+  referenceType String?  @map("reference_type")
+  referenceId   String?  @map("reference_id") @db.Uuid
+  beforeValue   Json?    @map("before_value")
+  afterValue    Json?    @map("after_value")
+  ip            String?
+  device        String?
+  createdAt     DateTime @default(now()) @map("created_at")
 
   user     User?     @relation(fields: [userId], references: [id])
   employee Employee? @relation("EmployeeAuditActor", fields: [employeeId], references: [id])
@@ -1202,7 +1287,7 @@ model AuditLog {
 // unique index hit instead of a query.
 model Setting {
   id          String   @id @default(uuid()) @db.Uuid
-  key         String   // e.g. "MAX_LTV_PERCENT", "APPROVAL_LIMIT_BRANCH_MANAGER"
+  key         String // e.g. "MAX_LTV_PERCENT", "APPROVAL_LIMIT_BRANCH_MANAGER"
   scope       String   @default("GLOBAL") // GLOBAL | ORGANIZATION | BRANCH | PRODUCT
   scopeId     String   @default("00000000-0000-0000-0000-000000000000") @map("scope_id") @db.Uuid
   value       Json
@@ -1222,16 +1307,16 @@ model Setting {
 
 // Maker-checker trail for every configuration change (spec #64, #70).
 model ConfigurationVersion {
-  id          String   @id @default(uuid()) @db.Uuid
-  settingId   String   @map("setting_id") @db.Uuid
-  previousValue Json?  @map("previous_value")
-  newValue    Json     @map("new_value")
-  changeReason String? @map("change_reason")
-  requestedBy String   @map("requested_by") @db.Uuid
-  approvedBy  String?  @map("approved_by") @db.Uuid
-  status      String   @default("PENDING") // PENDING | APPROVED | REJECTED
-  requestedAt DateTime @default(now()) @map("requested_at")
-  decidedAt   DateTime? @map("decided_at")
+  id            String    @id @default(uuid()) @db.Uuid
+  settingId     String    @map("setting_id") @db.Uuid
+  previousValue Json?     @map("previous_value")
+  newValue      Json      @map("new_value")
+  changeReason  String?   @map("change_reason")
+  requestedBy   String    @map("requested_by") @db.Uuid
+  approvedBy    String?   @map("approved_by") @db.Uuid
+  status        String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  requestedAt   DateTime  @default(now()) @map("requested_at")
+  decidedAt     DateTime? @map("decided_at")
 
   setting Setting @relation(fields: [settingId], references: [id])
 
@@ -1243,12 +1328,78 @@ model ConfigurationVersion {
 // ----------------------------------------------------------------------------
 
 model NumberSequence {
-  id          String   @id @default(uuid()) @db.Uuid
-  entityType  String   @map("entity_type") // CUSTOMER | LOAN | PAYMENT | COLLATERAL | PACKET | AUCTION
-  scopeKey    String   @map("scope_key") // e.g. "BLR-2026", "2026"
-  lastValue   Int      @default(0) @map("last_value")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id         String   @id @default(uuid()) @db.Uuid
+  entityType String   @map("entity_type") // CUSTOMER | LOAN | PAYMENT | COLLATERAL | PACKET | AUCTION
+  scopeKey   String   @map("scope_key") // e.g. "BLR-2026", "2026"
+  lastValue  Int      @default(0) @map("last_value")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@unique([entityType, scopeKey])
   @@map("number_sequences")
+}
+
+// ----------------------------------------------------------------------------
+// COLLECTIONS (Phase E) — overdue follow-up: one open case per overdue loan,
+// a log of contact attempts, and customer promises to pay.
+// ----------------------------------------------------------------------------
+
+model CollectionCase {
+  id          String    @id @default(uuid()) @db.Uuid
+  caseNumber  String    @unique @map("case_number") // CC-2026-000001
+  loanId      String    @map("loan_id") @db.Uuid
+  customerId  String    @map("customer_id") @db.Uuid
+  branchId    String    @map("branch_id") @db.Uuid
+  status      String    @default("OPEN") // OPEN | CLOSED
+  assignedTo  String?   @map("assigned_to") @db.Uuid
+  openedAt    DateTime  @default(now()) @map("opened_at")
+  closedAt    DateTime? @map("closed_at")
+  closeReason String?   @map("close_reason")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  loan       Loan                 @relation(fields: [loanId], references: [id])
+  customer   Customer             @relation(fields: [customerId], references: [id])
+  assignee   Employee?            @relation("CollectionAssignee", fields: [assignedTo], references: [id])
+  activities CollectionActivity[]
+  promises   PromiseToPay[]
+
+  @@index([loanId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([branchId])
+  @@map("collection_cases")
+}
+
+model CollectionActivity {
+  id         String   @id @default(uuid()) @db.Uuid
+  caseId     String   @map("case_id") @db.Uuid
+  employeeId String?  @map("employee_id") @db.Uuid // null = system-generated entry
+  type       String // CALL | VISIT | SMS | NOTICE | NOTE | SYSTEM
+  outcome    String? // REACHED | NO_ANSWER | REFUSED | PROMISED | WRONG_NUMBER | OTHER
+  notes      String?
+  occurredAt DateTime @default(now()) @map("occurred_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  case     CollectionCase @relation(fields: [caseId], references: [id])
+  employee Employee?      @relation(fields: [employeeId], references: [id])
+
+  @@index([caseId])
+  @@map("collection_activities")
+}
+
+model PromiseToPay {
+  id             String    @id @default(uuid()) @db.Uuid
+  caseId         String    @map("case_id") @db.Uuid
+  promisedAmount Decimal   @map("promised_amount") @db.Decimal(18, 2)
+  promisedDate   DateTime  @map("promised_date") @db.Date
+  status         String    @default("PENDING") // PENDING | KEPT | BROKEN | CANCELLED
+  recordedBy     String    @map("recorded_by") @db.Uuid
+  resolvedAt     DateTime? @map("resolved_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  case CollectionCase @relation(fields: [caseId], references: [id])
+
+  @@index([caseId])
+  @@index([status, promisedDate])
+  @@map("promises_to_pay")
 }

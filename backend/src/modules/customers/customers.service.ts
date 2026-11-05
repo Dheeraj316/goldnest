@@ -56,6 +56,7 @@ export class CustomersService {
       deletedAt: null,
       ...branchFilter,
       ...(query.mobile ? { mobile: { contains: query.mobile } } : {}),
+      ...(query.kycStatus ? { kycStatus: query.kycStatus as never } : {}),
       ...(query.customerCode ? { customerCode: { contains: query.customerCode, mode: 'insensitive' as const } } : {}),
       ...(query.name
         ? {

@@ -27,6 +27,13 @@ export class BranchesController {
     return this.branchesService.findAll(user);
   }
 
+  // No RBAC permission required — just authentication — so the customer app
+  // can list branches to apply at (customers hold no permission codes).
+  @Get('active')
+  listActive() {
+    return this.branchesService.listActive();
+  }
+
   @Get(':id')
   @RequirePermissions('branch.view')
   findOne(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: JwtPayloadUser) {

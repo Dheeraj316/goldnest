@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsDefined, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 import { DeviceInfoDto } from './device-info.dto';
 
 export class EmployeeLoginDto {
@@ -19,6 +19,7 @@ export class EmployeeLoginDto {
   mfaCode?: string;
 
   @ApiProperty({ type: DeviceInfoDto })
+  @IsDefined()
   @ValidateNested()
   @Type(() => DeviceInfoDto)
   device: DeviceInfoDto;

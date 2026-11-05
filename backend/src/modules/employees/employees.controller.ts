@@ -27,6 +27,16 @@ export class EmployeesController {
     return this.employeesService.findAll(user);
   }
 
+  // No RBAC permission required — just authentication — so every employee
+  // can read their own profile for the business app's home screen. `permissions`
+  // is what they may do RIGHT NOW (read live from their role, not the sign-in
+  // snapshot in their token), so a client can show or hide screens accurately.
+  @Get('me')
+  async findMe(@CurrentUser() user: JwtPayloadUser) {
+    const employee = await this.employeesService.findMe(user.employeeId!);
+    return { ...employee, permissions: user.permissions };
+  }
+
   @Get(':id')
   @RequirePermissions('employee.view')
   findOne(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: JwtPayloadUser) {
