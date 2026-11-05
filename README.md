@@ -1,107 +1,99 @@
-# Goldnest — Secured Lending & Gold Loan Management Platform
+# Goldnest
 
-A multi-branch, multi-role platform for **Goldnest**, a secured-lending business
-(loans against gold jewellery and other legally permitted collateral): customer
-mobile app, branch/staff mobile app, super admin web console, public website,
-and a central backend/API platform.
+A multi-branch platform for secured lending against gold jewellery: a NestJS API, a Next.js admin console, a public website, and two Flutter apps (one for customers, one for branch staff).
 
-> **Before production launch:** this business must obtain professional legal/
-> compliance advice on lending structure, licensing (RBI/NBFC or state money-lender
-> registration as applicable), KYC/AML obligations, data protection, taxation,
-> collateral custody, insurance and auction procedures. Every regulatory
-> parameter in this codebase (LTV, interest, fees, tenure, approval limits,
-> notice periods, KYC requirements) is admin-configurable via the
-> [`settings`](backend/src/modules/settings) module precisely so that legal
-> requirements can be set correctly without a code change — nothing here should
-> be read as legal or compliance advice.
+> **Please read:** lending is regulated. Every regulatory parameter here (LTV, interest, fees, tenure, approval limits, notice periods, KYC rules) is configurable by an admin through the [`settings`](backend/src/modules/settings) module, so legal requirements can be set without a code change. Nothing in this repository is legal or compliance advice, and the system needs professional review before any real use.
 
-## Repository layout
+## What is in it
 
-```
-customer-app/       Flutter customer mobile app
-business-app/        Flutter branch/staff mobile app
-admin-web/            Next.js super admin web console — see admin-web
-public-website/      Public corporate website — see public-website
-backend/             NestJS API platform — see backend/README.md
-shared/               Cross-app shared types/contracts (populated as needed)
-infrastructure/      docker-compose for local Postgres/Redis; cloud IaC goes here later
-documentation/       Architecture, data model, and delivery-phase notes
-```
+| Folder | What it is | Stack |
+|---|---|---|
+| `backend/` | The API: 23 modules, about 150 endpoints, 58 data models | NestJS, TypeScript, Prisma, PostgreSQL |
+| `admin-web/` | Super admin and staff console (31 pages) | Next.js, React, Recharts |
+| `public-website/` | Marketing site with loan calculator and branch locator (14 pages) | Next.js, React |
+| `customer-app/` | Customer mobile app | Flutter, Riverpod, Dio |
+| `business-app/` | Branch staff mobile app | Flutter, Riverpod, Dio |
+| `infrastructure/` | docker-compose for local Postgres and Redis | Docker |
+| `documentation/` | Architecture, data model, roadmap | Markdown |
 
-## Current status
+## What it does
 
-**Backend (Phase 1 — done):** architecture, full data model, auth (customer
-OTP + employee password/MFA), RBAC with branch isolation, branches, employees,
-customers/KYC, maker-checker configuration, and an append-only audit log.
-Verified end-to-end against a live database.
+- **Customers and KYC:** registration, KYC upload and review, customer profile.
+- **Loans:** loan products with interest rules and charges, applications, collateral and appraisal, approval, disbursement, payments, part release, top-up, renewal and closure.
+- **Interest engine:** interest and charges worked out from the configured product rules.
+- **Collections and auctions:** overdue cases and nightly sweeps, then auction handling with notices generated as PDFs.
+- **Vault:** custody of pledged items through its lifecycle.
+- **Cash and reconciliation:** a branch cash register with a day open and close, and bank statement reconciliation with auto-matching.
+- **Risk and reporting:** nightly risk alerts, reports with export, support tickets.
+- **Administration:** branches, employees, roles and permissions, settings with approval, an audit log.
 
-**Admin web console (Phase 6, staff side — done):** login, dashboard, branches,
-employees, customers + KYC review, roles & permissions editor, maker-checker
-settings approval UI, audit log viewer. Verified end-to-end against the live
-backend, including a real cross-user approval.
+## How it is built
 
-**Public website (Phase 6 — done):** full marketing site with an indicative
-loan calculator, branch locator with a live map, and legal pages clearly
-marked as drafts pending legal review.
+- **Sign-in:** customers log in with an OTP, staff with a password plus MFA. Sessions use JWT.
+- **Access control:** role-based, and every query is limited to the user's branch. Roles and permissions are edited from the admin console.
+- **Maker-checker:** changes to sensitive settings need approval from a second person.
+- **Audit:** an append-only audit log records changes.
+- **Hardening:** Helmet, request throttling, validated environment config (Joi) and validated request bodies (class-validator). Swagger docs are available outside production.
+- **Background work:** scheduled nightly jobs, for example the risk-alert sweep.
+- **Security review:** I reviewed the API by hand and fixed the branch-isolation gaps it showed (see the commit "Fix branch-isolation gaps found in a manual security review").
 
-**Mobile apps (Phase 6, customer/business — in progress):** see
-`customer-app/` and `business-app/`. Built against the real Phase 1 backend
-endpoints (auth, profile, KYC); loan/collateral screens will follow once
-those backend modules exist (Phase 2+).
+## Run it locally
 
-**Not yet built:** loan origination, collateral/appraisal, interest engine,
-payments/ledger, vault, auctions, notifications, reporting — see
-[`documentation/roadmap.md`](documentation/roadmap.md).
-
-## Getting started
-
-### Backend
+Backend (needs Node.js 18+ and Docker, or your own Postgres):
 
 ```bash
-cd infrastructure && docker compose up -d      # Postgres + Redis (or point at your own Postgres)
+cd infrastructure && docker compose up -d      # Postgres and Redis
 cd ../backend
-cp .env.example .env                            # then fill in real secrets
+cp .env.example .env                           # then fill in your own secrets
 npm install
 npm run prisma:migrate:dev
-npm run prisma:seed                             # creates roles/permissions + a bootstrap SUPER_ADMIN
-npm run start:dev
+npm run prisma:seed                            # creates roles, permissions and a first super admin
+npm run start:dev                              # http://localhost:3000, API docs at /api/docs
 ```
 
-API docs (non-production only): `http://localhost:3000/api/docs`. Full instructions: [`backend/README.md`](backend/README.md).
-
-### Admin web console
+Admin console:
 
 ```bash
 cd admin-web
-cp .env.example .env.local                      # GOLDNEST_API_URL, defaults to http://localhost:3000/api/v1
+cp .env.example .env.local                     # GOLDNEST_API_URL, default http://localhost:3000/api/v1
 npm install
-npm run dev                                     # http://localhost:3002
+npm run dev                                    # http://localhost:3002
 ```
 
-### Public website
+Public website:
 
 ```bash
 cd public-website
 npm install
-npm run dev                                     # http://localhost:3001
+npm run dev                                    # http://localhost:3001
 ```
 
-### Mobile apps
+Mobile apps:
 
 ```bash
-cd customer-app   # or business-app
+cd customer-app        # or business-app
 flutter pub get
 flutter run
 ```
 
-## Delivery phases
+More detail for the API is in [backend/README.md](backend/README.md).
 
-1. Architecture, database, auth, RBAC, branch structure, customer/employee mgmt — **done**
-2. Loan application, KYC workflow, collateral, appraisal, approval, disbursement
-3. Payments, interest engine, ledger, notifications, receipts
-4. Vault, collateral movement, renewal, closure, overdue, auction workflow
-5. Reports, analytics, reconciliation, risk management, audit
-6. Customer mobile app, business mobile app, admin web, public website — **admin web + website done; mobile apps in progress**
-7. Security testing, performance testing, UAT, production deployment
+## Tests and CI
 
-See [`documentation/roadmap.md`](documentation/roadmap.md) for the detailed breakdown.
+```bash
+cd backend
+npm test               # Jest unit tests
+npm run test:e2e       # end-to-end tests
+```
+
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push to `main`: install, lint, Prisma generate and migrate on a Postgres service, build, and unit tests with coverage.
+
+## Status
+
+The API, admin console, public website and both mobile apps are implemented and have been tested against a running backend. It has not been deployed, and it has not had a legal or compliance review, so treat it as a working build and not a finished product. Planned work is in [documentation/roadmap.md](documentation/roadmap.md).
+
+## Documentation
+
+- [Architecture](documentation/architecture.md)
+- [Data model](documentation/data-model.md)
+- [Roadmap](documentation/roadmap.md)
